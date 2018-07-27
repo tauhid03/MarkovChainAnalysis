@@ -17,7 +17,7 @@ def calculateSteadyStateDistribution(matrix):
     return vector / sum(vector)
 
 def main():
-    #Aperiodic, irreducible and Double stochastic Markov Chain (e.g., random walk on a cyclic graph)
+    #Aperiodic, irreducible and double stochastic Markov chain (e.g., random walk on a cyclic graph)
     P= np.matrix([[0, 0.2, 0.2, 0.2, 0.2, 0.2], [0.2, 0, 0.2, 0.2, 0.2, 0.2], [0.2, 0.2, 0, 0.2, 0.2, 0.2], [0.2, 0.2, 0.2, 0, 0.2, 0.2], [0.2, 0.2, 0.2, 0.2, 0, 0.2], [0.2, 0.2, 0.2, 0.2, 0.2, 0]])
     mc=markovChain(P)
     #Calculate the limiting distribution or the steady state distribution of a Markov chain
