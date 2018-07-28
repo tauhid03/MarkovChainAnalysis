@@ -16,7 +16,7 @@ We apply the Tarjan's strongly connected components algorithm. The running time 
 
 To install the relevant package, we can use the following command:
 
-easy_install tarjan
+easy_install tarjan or pip install tarjan
 
 or from this source distribution, we can install with the command:
 
