@@ -10,4 +10,6 @@ or the source distribution can be downloaded and installed manually with the com
 
 python setup.py install
 
+For more info, we can follow this link: https://pypi.org/project/discreteMarkovChain/
+
 
