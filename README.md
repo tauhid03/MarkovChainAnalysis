@@ -12,4 +12,8 @@ python setup.py install
 
 For more info, we can follow this link: https://pypi.org/project/discreteMarkovChain/
 
+We apply the Tarjan's strongly connected components algorithm. The running time of this algorithm is linear.
+
+
+
 
