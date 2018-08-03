@@ -80,14 +80,14 @@ def main():
             PGlist[PGR]=np.array(sorted(SCC[i]))
             #print  PGlist[PGR]
             pgfile.write(str(i+1)+' is a persistant group with length '+str(len(SCC[i]))+'\n\n')
-            pgfile.write(str(PGlist[PGR])+'\n\n')
+            pgfile.write(str(sorted(SCC[i]))+'\n\n')
             PGR=PGR+1
         else:
             #print ((i+1),'is a transient group')
             #print np.array(sorted(SCC[i]))
             tg=np.array(sorted(SCC[i]))
             tgfile.write(str(i+1)+' is a transient group with length '+str(len(SCC[i]))+'\n\n')
-            tgfile.write(str(tg)+'\n\n')
+            tgfile.write(str(str(sorted(SCC[i])))+'\n\n')
      
     ## find transient cells, single or multiple domiciles
     persistentcelllist=[] 
