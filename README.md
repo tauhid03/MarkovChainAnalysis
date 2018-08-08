@@ -16,13 +16,13 @@ For more info, we can follow this link: https://pypi.org/project/discreteMarkovC
 We apply the Tarjan's strongly connected components algorithm. The running time of this algorithm is linear.
 
 To install the relevant package, we can use the following command:
-
+```
 easy_install tarjan or pip install tarjan
-
+```
 or from this source distribution, we can install with the command:
-
+```
 python setup.py install
-
+```
 For more details: https://pypi.org/project/tarjan/
 
 
