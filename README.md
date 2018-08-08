@@ -8,8 +8,9 @@ pip install discreteMarkovChain
 ```
 or the source distribution can be downloaded and installed manually with the command:
 
+```
 python setup.py install
-
+```
 For more info, we can follow this link: https://pypi.org/project/discreteMarkovChain/
 
 We apply the Tarjan's strongly connected components algorithm. The running time of this algorithm is linear.
