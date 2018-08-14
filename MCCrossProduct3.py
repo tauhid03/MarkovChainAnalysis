@@ -5,7 +5,6 @@ def main():
     P = np.matrix([[0.2, 0.8], [0.4, 0.6]])
     Q = np.matrix([[0.3, 0.7], [0.1, 0.9]])
     R = np.matrix([[0.15, 0.85], [0.25, 0.75]])
-    
     print 'First Markov chain'
     print P
     print 'Second Markov chain'
@@ -14,7 +13,6 @@ def main():
     print R
     
     PQR=np.zeros((len(P)*len(Q)*len(R),len(P)*len(Q)*len(R)))
-    
     
     n=len(P)
     for q in range(len(R)):
