@@ -16,7 +16,7 @@ def main():
     PQR=np.zeros((len(P)*len(Q)*len(R),len(P)*len(Q)*len(R)))
     
     
-    n=len(Q)
+    n=len(P)
     for q in range(len(R)):
         for r in range(len(R)):
             for k in range(len(Q)):
