@@ -10,7 +10,7 @@ def main():
     print Q
     PQ=np.zeros((len(P)*len(Q),len(P)*len(Q)))
     
-    n=len(Q)
+    n=len(P)
     for k in range(len(Q)):
         for l in range(len(Q)):
             for i in range (len(P)): 
