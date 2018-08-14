@@ -11,16 +11,21 @@ def main():
     PQ=np.zeros((len(P)*len(Q),len(P)*len(Q)))
     
     n=len(Q)
-    for l in range(len(Q)):
-        for k in range(len(Q)):
-            for j in range (len(P)): 
-                for i in range (len(P)):
-                    PQ[k+n*l][i+n*j]=P.item((k, i))* Q.item((l, j)) 
+    for k in range(len(Q)):
+        for l in range(len(Q)):
+            for i in range (len(P)): 
+                for j in range (len(P)):
+                    PQ[i+n*k][j+n*l]=P.item((i, j))* Q.item((k, l)) 
 
 
     print 'Cross product of two Markov chains'                
-    print PQ 
+    print PQ
 
+    #for i in range(len(PQ)):
+    #    sum=0
+    #    for j in range(len(PQ[i])):
+    #        sum+=PQ[i][j]
+    #    print 'row', (i+1), 'adds up to', sum
                       
 
 if __name__ == '__main__': main()
