@@ -3,6 +3,24 @@ library(ArmaUtils)
 
 randomWalkMatrix <- function(n, steps){
   M <-matrix(0.0,n,n)
+  #Add artifical data to the matrix
+  for (row in 1:nrow(M))
+  {
+    #M goes from 1 to n
+    M[row,row] <- M[row,row] + 1
+    if(row > 1)
+    {
+      M[row-1, row-1] <- M[row-1, row-1] + 1
+      M[row-1, row] <- M[row-1, row] + 1
+      M[row, row-1] <- M[row, row-1] + 1
+    }
+    if(row < n)
+    {
+      M[row+1, row+1] <- M[row+1, row+1] + 1
+      M[row+1, row] <- M[row+1, row] + 1
+      M[row, row+1] <- M[row, row+1] + 1
+    }
+  }
   x <- n/2
   y <- n/2
   for (i in 1:steps)
@@ -63,11 +81,9 @@ hittingTime <- function(P,Q)
   
   
   
-  
   ## Target states
   hittingset <- diagonalelements
-  
-  
+   
   one=array(1,c(1,d))
   
   one[hittingset] = 0
@@ -89,41 +105,59 @@ hittingTime <- function(P,Q)
   k3 = one + t(k2)
    
   k3[mask] = 0
+  i = 0
+  foo <- tryCatch(
+  {
   while(norm(k1-k3)>1e-1){
+          i = i +1
           k1=k3
           k2=armakron(y=k1,list(Q,P))
           k3 = one + t(k2)
           k3=k3*one  
   }
+  },
+  finally={
+
+   # message("norm(k1-k3) =")
+  #  message(norm(k1-k3))
+  #  message("k1 =")
+  #  message(k1)
+  #  message("k3 =")
+  #  message(k3)
+  }
+  )
   
 }
 
 size = 2
-max_time = 60.0
+max_time = 10
 last_spent_time = 0
 time <- c()
 sizes <- c()
 #run test
 while(1)
 {
+  print("New test size is")
+  print(size)
   start_time <- proc.time()
   P <- randomWalkMatrix(size, 100000)
   Q <- randomWalkMatrix(size, 100000)
-  hittingTime(P,Q)
+  HT <- hittingTime(P,Q)
   last_spent_time <- proc.time() - start_time
-  
   time <- c(time,last_spent_time[3])
   sizes <- c(sizes, size)
   
   if(as.numeric(last_spent_time[3]) > max_time)
     break
   size <- size * 2
-  
-  print(size)
+
 }
 
+# Create Bar Plot 
+barplot(time,names.arg=sizes,xlab="N",ylab="Time to Compute Hitting Time (Seconds)",col="blue",
+        main="Hitting Time Bar Graph",border="black")
 
 # Create Bar Plot 
 barplot(time,names.arg=sizes,xlab="N",ylab="Time to Compute Hitting Time",col="blue",
-        main="Hitting Time Bar Graph",border="black")
+main="Hitting Time Bar Graph",border="black")
 
