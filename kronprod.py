@@ -54,7 +54,7 @@ class KronProd:
         np.copyto(self.X, self.Y)
 
     def dot(self, x):
-        self.X = x
+        np.copyto(self.X, x)
         k = self.nmat
         nk = self.n[k-1]
         mk = self.N/nk

@@ -29,22 +29,15 @@ def hittingtime(Mlist):
         if i==diag*(A.n[0])+diag:
             diagonaltargetset.append(i)
             diag=diag+1
-    #print diagonaltargetset
+    #print(diagonaltargetset)
     
     ## Target states
     hittingset=diagonaltargetset
-    #hittingset=[0,3]
 
     one = np.ones(A.N)
     one[hittingset] = 0
-    
-    ##k1 = np.zeros(len(M))
-    ##for i in range(100):
-    ##    k1 = M3.dot(k1)+one1
-    ##    k1[hittingset1]  = 0
-    ##    #print k1
-    ##
-    ##print(k1)
+
+  
 
     mask = np.zeros(A.N)
     for i in range(A.N):
