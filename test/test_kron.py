@@ -11,13 +11,13 @@ class TestKron(unittest.TestCase):
         return
 
     def testOnes(self):
-        A1 = [ np.array([[1, 1], [1,1]]),
-                    np.array([[1,1], [1,1]])]
-        x1 = np.array([1,1,1,1])
-        y1 = np.array([4,4,4,4])
+        A1 = [ np.array([[1., 1.], [1.,1.]]),
+                    np.array([[1.,1.], [1.,1.]])]
+        x1 = np.array([1.,1.,1.,1.])
+        y1 = np.array([4.,4.,4.,4.])
         kp = KronProd(list(reversed(A1)))
-        kp.dot()
-        self.assertSequenceEqual(list(kp.Y), list(y1))
+        y = kp.dot(x1)
+        self.assertSequenceEqual(list(y), list(y1))
 
 #    hacky "symbolic" test, requires editing kronprod to test
 #    leaving here in case its useful later
