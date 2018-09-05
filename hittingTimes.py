@@ -47,13 +47,12 @@ def hittingtime(Mlist):
         
     k1 = np.zeros(A.N)
     k2 = one + A.dot(k1)
-    i = 0
+   
 
     while(LA.norm(k1-k2)>1e-6):
         k1=k2
         k2 = one + A.dot(k1)
         np.putmask(k2, mask, 0)
-        i += 1
         print("Iteration",i)
         print(LA.norm(k1-k2))
 
