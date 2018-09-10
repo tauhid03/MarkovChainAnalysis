@@ -120,7 +120,7 @@ class KronProdSparse:
 
 def benchmarkTestSparse(n,p):
     A1 = [np.identity(p) for i in range(n)]
-    A2 = np.concatenate([a.flatten() for a in A1], axis=None)
+    A2 = np.concatenate([a.flatten() for a in list(reversed(A1))], axis=None)
     A2_csr = scipy.sparse.csr_matrix(A2) #For some reason I have to use this to reshape the DOK matrix
     A2_dok = scipy.sparse.dok_matrix(A2.reshape(A2_csr.shape))
         
@@ -139,12 +139,13 @@ def benchmarkTestSparse(n,p):
 
 if __name__ == '__main__':
     n = 2
-    p = 40
+    p = 400
     A1 = [np.identity(p) for i in range(n)]
-    A2 = np.concatenate([a.flatten() for a in A1], axis=None)
+    A2 = np.concatenate([a.flatten() for a in list(reversed(A1))], axis=None)
     A2_csr = scipy.sparse.csr_matrix(A2) #For some reason I have to use this to reshape the DOK matrix
     A2_dok = scipy.sparse.dok_matrix(A2.reshape(A2_csr.shape))
     print("size of A = {}".format(A2_dok.shape))
+
         
     X = np.random.rand(p**n)
     X_csr = scipy.sparse.csr_matrix(X) #For some reason I have to use this to reshape the DOK matrix
