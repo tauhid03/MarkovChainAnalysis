@@ -8,7 +8,7 @@ import numpy as np
 from operator import mul
 from functools import reduce
 
-DEBUG = True 
+DEBUG = False
 
 # TODO investigate LinearOperators for even moar fast
 #from scipy.sparse.linalg import LinearOperator
@@ -30,7 +30,7 @@ class KronProd:
         ktemp = 0
         inic = ki*(nk*nk)
         if DEBUG:
-			print("nk = {}, mk = {}, ki = {}".format(nk, mk, ki))
+            print("nk = {}, mk = {}, ki = {}".format(nk, mk, ki))
         for i in range(nk): # dim of matrix k
             J = 0
             for s in range(int(mk)): # N / nk
@@ -42,8 +42,8 @@ class KronProd:
                     sum = sum + self.flat_A[I]*self.X[J]
            #         print("A_Val = {}, X_Val = {}".format(self.flat_A[I], self.X[J]))
                     if DEBUG:
-						pass
-						print ("I = {}, J = {}".format(I,J))
+                        pass
+                        print ("I = {}, J = {}".format(I,J))
            #             print("elem",I,"of",self.flat_A)
            #             print("elem",J,"of",self.X)
            #             print("sum=", sum)
@@ -52,9 +52,8 @@ class KronProd:
                 print("Sum = {}".format(sum))
                 self.Y[ktemp] = sum
                 if DEBUG:
-					pass
-                #    print("setting element",ktemp,"of Y")
-                #    print("Y is now", self.Y)
+                    print("setting element",ktemp,"of Y")
+                    print("Y is now", self.Y)
                 ktemp = ktemp + 1
             inic = I
             if DEBUG:
