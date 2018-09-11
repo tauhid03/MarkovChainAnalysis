@@ -12,7 +12,7 @@ import scipy.sparse
 import copy
 import time
 
-DEBUG = False 
+DEBUG = False
 
 # TODO investigate LinearOperators for even moar fast
 #from scipy.sparse.linalg import LinearOperator
@@ -26,10 +26,6 @@ class KronProdSparse:
         self.N = reduce(mul, self.n, 1) # size of final vector y = A*x
         self.A_dok = A_dok
         self.Y = np.empty(shape=self.N, dtype = np.float64)
-      #  self.X = np.empty(shape=self.n[0]**self.nmat)
-      #  self.Y = scipy.sparse.dok_matrix(self.Y)
-      #  self.X = scipy.sparse.dok_matrix(self.X)
-      #  self.Y = scipy.sparse.dok_matrix((1, self.N), dtype=np.float32)
         self.X = X_dok
         self.xkeys = xkeys
         self.akeys = akeys
@@ -38,8 +34,6 @@ class KronProdSparse:
 
         self.counter = 0 #Used to determine how many multiplications were performed
         print("Shape is {}".format(self.n[0]**self.nmat))
-        #self.Y = np.empty(shape=self.N, dtype = object)
-        #self.X = x
 
     def contract(self, nk, mk, ki, A):
         print("A = {}".format(A))
@@ -54,6 +48,7 @@ class KronProdSparse:
             pairs = []
             while(self.xval < len(self.xkeys)):
                 pairs = self.getPairs(inic, nk)
+                #print("[DEBUG] Pairs = {}".format(pairs))
                 pair_sum = 0.0
                 counter = 0
                 time_start_foo = time.time()
@@ -72,23 +67,18 @@ class KronProdSparse:
             #            maxval = pair[1][1]
             #    for i in range(self.xkeys[0][1],self.xkeys[0][1]+nk):
              #       self.xkeys.remove((0,i))
-	    for pair in pairs:
-	        self.akeys.remove(pair[0]) 
-
+            for pair in pairs:
+                self.akeys.remove(pair[0])
             inic += nk
-        #copy Y to X
-        #for key in self.Y.keys():
-        #    self.X[key] = self.Y[key]
         np.copyto(self.X, self.Y)
 
-#        self.X = self.Y.copy()
         #print("Time foo = {}".format(time_A))
 
     def getPairs(self, INIC, nk):
         pairs = []
     #    print("INIC = {}, nk = {}, self.xval = {}".format(INIC, nk, self.xval))
         for a in self.akeys:
-    #        print("[DEBUG] a = {}".format(a[1]))
+            #print("[DEBUG] a = {}".format(a[1]))
             if (a[1] >= INIC+nk):
                 break
             pairs.append( (a, (0,(a[1]%nk) + self.xval)))
@@ -99,7 +89,6 @@ class KronProdSparse:
             #    if(a[1] == ((x[1] % nk) + INIC)):
             #        pairs.append( (a,x) )
         self.xval = self.xval +  nk
-    #    print("[DEBUG] Pairs = {}".format(pairs))
     #    print("[DEBUG] LEAVING")
         return pairs
 
