@@ -16,45 +16,44 @@ def fullKronProd(P,Q):
                     PQ[k+n*l][i+n*j]=P.item((k, i))* Q.item((l, j)) 
     return PQ
 
+
+# Target states -- diagonal states of final Markov chain
+# n is dimension of both agent's state spaces
+def twoAgentHittingSet(n,p):
+    hittingset = []
+    diag = 0
+    for i in range(n*n):
+        if i == diag*n + diag:
+            hittingset.append(i)
+            diag += 1
+    return hittingset
+
 # pass in list of nxn matrices
 def hittingtime(Mlist):
     #Plist = [np.array(markovChain(m).getTransitionMatrix()) for m in Mlist]
     Plist = Mlist
     A = KronProd(Plist)
 
-    ## Target states -- diagonal states of final Markov chain
-    diagonaltargetset=[0]
-    diag=1
-    for i in range(1,A.N):
-        if i==diag*(A.n[0])+diag:
-            diagonaltargetset.append(i)
-            diag=diag+1
-    #print(diagonaltargetset)
-    
-    ## Target states
-    hittingset=diagonaltargetset
+    hittingset = twoAgentHittingSet(A.n[0], len(Plist))
+    print(hittingset)
 
     one = np.ones(A.N)
     one[hittingset] = 0
-
-  
 
     mask = np.zeros(A.N)
     for i in range(A.N):
         if i in hittingset:
             mask[i]=1
 
-        
     k1 = np.zeros(A.N)
     k2 = one + A.dot(k1)
-   
 
     while(LA.norm(k1-k2)>1e-6):
         k1=k2
         k2 = one + A.dot(k1)
         np.putmask(k2, mask, 0)
-        print("Iteration",i)
-        print(LA.norm(k1-k2))
+        #print("Iteration",i)
+        #print(LA.norm(k1-k2))
 
     print('Hitting Time',k2)
 

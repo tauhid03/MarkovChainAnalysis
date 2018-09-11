@@ -3,6 +3,7 @@
 import unittest
 
 from kronprod import *
+from hittingTimes import *
 
 class TestKron(unittest.TestCase):
 
@@ -68,15 +69,22 @@ class TestKron(unittest.TestCase):
         np.testing.assert_almost_equal(big_y, Y, decimal=7, verbose=True)
 
     # took ~150 seconds
-    def testBig(self):
-        n = 5 # number of factors
-        p = 20 # dimension of factor
+#    def testBig(self):
+#        n = 5 # number of factors
+#        p = 20 # dimension of factor
+#        r_As = [np.random.rand(p,p) for i in range(n)]
+#        As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
+#        x = np.random.rand(p**n)
+#        kp = KronProd(list(reversed(As)))
+#        Y = kp.dot(x)
+#        print("efficient calc: ", Y)
+
+    def testHittingTimes(self):
+        n = 2 # number of factors
+        p = 4 # dimension of factor
         r_As = [np.random.rand(p,p) for i in range(n)]
         As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
-        x = np.random.rand(p**n)
-        kp = KronProd(list(reversed(As)))
-        Y = kp.dot(x)
-        print("efficient calc: ", Y)
+        hittingtime(As)
 
 
 if __name__ == '__main__':
