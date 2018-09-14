@@ -28,6 +28,76 @@ def twoAgentHittingSet(n,p):
             diag += 1
     return hittingset
 
+# n is size of spatial discretiztion
+# k is size of angle discretization
+# i is state in joint two-agent state space
+# i = (robot1state)*n + (robot2state)
+# robot2state = i % (n)
+# robot1state = (i-robot2state) / n
+#
+# robotistate = (xcoord) + (ycoord)*n + thetacoord*(n^2)
+# xcoord = robotistate % n
+# ycoord = (robotistate - xcoord)/n % n
+# thetacoord = (robotistate - xcoord - ycoord*n)/n**2
+
+def unpackCoords(robot, n):
+    x = robot % n
+    y = (robot - x)/n % n
+    theta = (robot - x - y*n)/n**2
+    return (x,y,theta)
+
+def unpackGeom(i,n):
+    robot2 = i % n
+    robot1 = (i-robot2)/n
+    return unpackCoords(robot1, n), unpackCoords(robot2, n)
+
+# return Bool, resulting assembly id, and orientation
+
+# x1 x2 -> xx, xy = x1, th= 0
+def one_one_hitting(i,n):
+    (x1,y1,th1), (x2,y2,th2) = unpackGeom(i,n)
+    if y1-y2 == 0:
+        if x1-x2 == 1:
+            return True, 2, 0
+        elif x1-x2 == -1:
+            return True, 2, 2
+        else:
+            return False, False, False
+    elif x1-x2 == 0:
+        if y1-y2 == -1:
+            return True, 2, 3
+        elif y1-y2 == 1:
+            return True, 2, 1
+        else:
+            return False, False, False
+    else:
+        return False, False, False
+
+
+# approximate hitting sets
+# underapproximates... misses this case and similar ones:
+# . x  x2
+# . x1 .
+# . .  .
+def one_two_hitting(i,n):
+    (x1,y1,th1), (x2,y2,th2) = unpackGeom(i,n)
+    if y1-y2 == 0:
+        if abs(x1-x2) == 1:
+            if th2 == 0 or th2 == 2:
+                return True, 3, 0 # straight line 3
+            else:
+                return True, 4, 0 # L shape 3
+        else:
+            return False, False, False
+    if x1-x2 == 0:
+        if abs(y1-y2) == 1:
+            if th2 == 0 or th2 == 2:
+                return True, 4, 0
+            else:
+                return True, 3, 0
+    else:
+        return False, False, False
+
 # pass in list of nxn matrices
 def hittingtime(Mlist):
     #Plist = [np.array(markovChain(m).getTransitionMatrix()) for m in Mlist]
