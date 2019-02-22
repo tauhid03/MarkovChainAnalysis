@@ -49,9 +49,9 @@ class KronProd:
            #             print("sum=", sum)
                     I = I + 1
                     J = J + 1
-                print("Sum = {}".format(sum))
                 self.Y[ktemp] = sum
                 if DEBUG:
+                    print("Sum = {}".format(sum))
                     print("setting element",ktemp,"of Y")
                     print("Y is now", self.Y)
                 ktemp = ktemp + 1
