@@ -2,11 +2,14 @@
 
 import numpy as _np
 import time as _time
-from mdptoolbox.mdp import MDP, _printVerbosity
+from mdptoolbox.mdp import MDP, _printVerbosity, _MSG_STOP_EPSILON_OPTIMAL_POLICY, _MSG_STOP_MAX_ITER
 import mdptoolbox.util as _util
 from src.kronprod import KronProd
+from functools import reduce
 
 # returns Ps as an array, indexed first by action and then by subsystem
+# action 0 makes agents slow (tend to stay in same state)
+# action 1 make agents fast (tend to move to one of the neighboring states)
 def multiagent(S=10, N=4, pslow = 0.9, pfast = 0.2):
     """Generate a MDP example for N random agents, each with state space size S
        Assume two actions: fast or slow
@@ -30,7 +33,7 @@ def multiagent(S=10, N=4, pslow = 0.9, pfast = 0.2):
         Ps[1][i][0, -1] += (1 - pfast)/2
         Ps[1][i][-1, 0] += (1 - pfast)/2
     # Definition of Reward matrix
-    # Reward for both agents moving slowly in last state
+    # Reward for both agents is zero everywhere but in last state
     R = _np.zeros((S**N, 2))
     R[-1, 0] = 1
     R[:, 1] = _np.zeros(S**N)
