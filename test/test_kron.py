@@ -2,7 +2,8 @@
 
 import unittest
 
-from kronprod_sparse import *
+from src.kronprod_sparse import *
+from src.kronprod import KronProd
 from hittingTimes import *
 
 class TestKron(unittest.TestCase):
@@ -11,7 +12,17 @@ class TestKron(unittest.TestCase):
     def setUp(self):
         return
 
-    def testOnes(self):
+    def testOnesDense(self):
+        A1 = [ np.array([[1., 1.], [1.,1.]]),
+                    np.array([[1.,1.], [1.,1.]])]
+        X = np.array([1.,1.,1.,1.])
+        y1 = np.array([4.,4.,4.,4.])
+
+        kp = KronProd(A1)
+        y = kp.dot(X)
+        self.assertSequenceEqual(list(y), list(y1))
+
+    def testOnesSparse(self):
         A1 = [ np.array([[1., 1.], [1.,1.]]),
                     np.array([[1.,1.], [1.,1.]])]
         X = np.array([1.,1.,1.,1.])
@@ -46,10 +57,8 @@ class TestKron(unittest.TestCase):
         X_dok = scipy.sparse.dok_matrix(X.reshape(X_csr.shape))
         x_keys = X_dok.keys()
         x_keys = sorted(x_keys, key=itemgetter(1))
-        print(x_keys)
         a_keys = A2_dok.keys()
         a_keys = sorted(a_keys, key=itemgetter(1))
-        print(a_keys)
         kp = KronProdSparse(A1, A2, a_keys, x_keys, A2, X)
         Y = kp.dot(A2, X)
 

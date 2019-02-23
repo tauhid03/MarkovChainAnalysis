@@ -10,21 +10,15 @@ from functools import reduce
 
 DEBUG = False
 
-# TODO investigate LinearOperators for even moar fast
-#from scipy.sparse.linalg import LinearOperator
-
 class KronProd:
     def __init__(self, As):
         self.As = As
         self.flat_A = np.concatenate([a.flatten() for a in self.As], axis=None)
-        print(self.flat_A)
         self.nmat = len(self.As)
         self.n = [len(a) for a in self.As] # dimensions of factors
         self.N = reduce(mul, self.n, 1) # size of final vector y = A*x
         self.Y = np.empty(shape=self.N, dtype = np.float64)
         self.X = np.empty(shape=self.n[0]**self.nmat)
-        #self.Y = np.empty(shape=self.N, dtype = object)
-        #self.X = x
 
     def contract(self, nk, mk, ki):
         ktemp = 0
@@ -35,18 +29,11 @@ class KronProd:
             J = 0
             for s in range(int(mk)): # N / nk
                 I = inic
-                #sum = ""
                 sum = 0.0
                 for t in range(nk): # dim of matrix k
-                    #sum = sum +"+"+ self.flat_A[I]+"*("+self.X[J]+")"
                     sum = sum + self.flat_A[I]*self.X[J]
-           #         print("A_Val = {}, X_Val = {}".format(self.flat_A[I], self.X[J]))
                     if DEBUG:
-                        pass
                         print ("I = {}, J = {}".format(I,J))
-           #             print("elem",I,"of",self.flat_A)
-           #             print("elem",J,"of",self.X)
-           #             print("sum=", sum)
                     I = I + 1
                     J = J + 1
                 self.Y[ktemp] = sum
@@ -72,6 +59,10 @@ class KronProd:
             mk = self.N/self.n[k-1-ki]
             self.contract(nk, mk, ki)
         return self.Y
+
+# Example code
+# ------------
+
 if __name__ == '__main__':
     n = 2 # number of factors
     p = 4 # dimension of factor

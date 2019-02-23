@@ -1,8 +1,9 @@
 import numpy as np
 from numpy import linalg as LA
+import scipy
 
 from discreteMarkovChain import markovChain
-from kronprod import *
+from src.kronprod import *
 
 
 def fullKronProd(P,Q):

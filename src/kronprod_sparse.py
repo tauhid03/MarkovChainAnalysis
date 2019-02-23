@@ -33,15 +33,16 @@ class KronProdSparse:
         self.xval = 0 #Used in finding sum
 
         self.counter = 0 #Used to determine how many multiplications were performed
-        print("Shape is {}".format(self.n[0]**self.nmat))
+        if DEBUG:
+            print("Shape is {}".format(self.n[0]**self.nmat))
 
     def contract(self, nk, mk, ki, A):
-        print("A = {}".format(A))
-        print("X = {}".format(self.X))
         time_A = 0.0
         ktemp = 0
         inic = ki*(nk*nk)
         if DEBUG:
+            print("A = {}".format(A))
+            print("X = {}".format(self.X))
             print("nk = {}, mk = {}, ki = {}".format(nk, mk, ki))
         for i in range(nk): # dim of matrix k
             self.xval = 0
@@ -72,24 +73,14 @@ class KronProdSparse:
             inic += nk
         np.copyto(self.X, self.Y)
 
-        #print("Time foo = {}".format(time_A))
 
     def getPairs(self, INIC, nk):
         pairs = []
-    #    print("INIC = {}, nk = {}, self.xval = {}".format(INIC, nk, self.xval))
         for a in self.akeys:
-            #print("[DEBUG] a = {}".format(a[1]))
             if (a[1] >= INIC+nk):
                 break
             pairs.append( (a, (0,(a[1]%nk) + self.xval)))
-            #for x in self.xkeys:
-            #    print("[DEBUG] x = {}".format(x[1]))
-            #    if(x[1] >= self.xval + nk):
-            #        break
-            #    if(a[1] == ((x[1] % nk) + INIC)):
-            #        pairs.append( (a,x) )
         self.xval = self.xval +  nk
-    #    print("[DEBUG] LEAVING")
         return pairs
 
 
@@ -97,14 +88,14 @@ class KronProdSparse:
         k = self.nmat
         nk = self.n[k-1]
         mk = self.N/nk
-        #print("nk = {}, mk = {}, k = {}".format(nk,mk,k))
+        if DEBUG:
+            print("nk = {}, mk = {}, k = {}".format(nk,mk,k))
         for ki in range(k):
             if DEBUG:
                 print("IN CONTRACTION ",ki)
                 print("mk: ", mk)
             mk = self.N/self.n[k-1-ki]
             self.contract(nk, mk, ki, a )
-        #print("Total operations = {}".format(self.counter))
         return self.Y
 
 def benchmarkTestSparse(n,p):
@@ -122,7 +113,6 @@ def benchmarkTestSparse(n,p):
     a_keys.sort(key=itemgetter(1))
     kp = KronProdSparse(A1, A2, a_keys, x_keys, A2_dok, X_dok)
     Y = kp.dot(A2_dok, X_dok)
-  #  print("Y = ")
     y_keys = Y.keys()
     y_keys.sort(key=itemgetter(1))
 
