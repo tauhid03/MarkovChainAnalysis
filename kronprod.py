@@ -49,7 +49,7 @@ class KronProd:
            #             print("sum=", sum)
                     I = I + 1
                     J = J + 1
-                print("Sum = {}".format(sum))
+            #    print("Sum = {}".format(sum))
                 self.Y[ktemp] = sum
                 if DEBUG:
                     print("setting element",ktemp,"of Y")
@@ -71,6 +71,8 @@ class KronProd:
                 print("mk: ", mk)
             mk = self.N/self.n[k-1-ki]
             self.contract(nk, mk, ki)
+        print("[DEBUG] Y = {}, sum = {}".format(self.Y, np.sum(self.Y)))
+
         return self.Y
 if __name__ == '__main__':
     n = 2 # number of factors

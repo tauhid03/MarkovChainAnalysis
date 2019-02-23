@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from numpy import linalg as LA
 
 from discreteMarkovChain import markovChain
@@ -37,8 +38,10 @@ def hittingtime(Mlist):
     hittingset = twoAgentHittingSet(A.n[0], len(Plist))
     print(hittingset)
 
+    print("[DEBUG] A.n[0] = {}, A.N = {}".format(A.n[0], A.N))
     one = np.ones(A.N)
     one[hittingset] = 0
+    print("one = {}".format(one))
 
     mask = np.zeros(A.N)
     for i in range(A.N):
@@ -46,14 +49,18 @@ def hittingtime(Mlist):
             mask[i]=1
 
     k1 = np.zeros(A.N)
+    print("k1 shape = {}".format(k1.shape))
     k2 = one + A.dot(k1)
-
-    while(LA.norm(k1-k2)>1e-6):
+    print("K2 is {}".format(k2))
+    i = 0
+    while(LA.norm(k1-k2)>.1):
         k1=k2
+        print("k1 = {}".format(k1))
         k2 = one + A.dot(k1)
         np.putmask(k2, mask, 0)
-        #print("Iteration",i)
-        #print(LA.norm(k1-k2))
+        print("Iteration",i)
+        print(LA.norm(k1-k2))
+        i += 1
 
     print('Hitting Time',k2)
 
@@ -320,11 +327,25 @@ def main():
     [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 ],
     [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.15 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.7 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.15 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]])
 
+   
+    csv1 = '2018-07-22-jw-weaselball_analysis_markov1_100.csv'
+    csv2 = '2018-07-22-jw-weaselball_analysis_markov1_100.csv'
+   # csv1 = 'markov1.csv'
+#    M1 = np.genfromtxt(csv1, delimiter=',')
+#    M1 = M1[1:,:]
+   # csv2 = 'markov1.csv'
+#    M2 = np.genfromtxt(csv2, delimiter=',')
+#    M2 = M2[1:,:]
+
+
     Mlist = [M1,M2]
 
-    return hittingtime(Mlist)
+    time_start = time.time()
+    out = hittingtime(Mlist)
+    np.savetxt("out/TEST.csv", out, delimiter=",")
+    print("total time = {}".format(time.time() - time_start))
+
    
 
 if __name__ == '__main__': main()
-
 

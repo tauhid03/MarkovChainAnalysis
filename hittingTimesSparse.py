@@ -65,7 +65,7 @@ def hittingtime(Mlist):
 
     i= 0
     print("K2 is {}".format(k2))
-    while(LA.norm(k1-k2)>3):
+    while(LA.norm(k1-k2)>.1):
         k1=k2
 
 #        X_csr = scipy.sparse.csr_matrix(k1) #For some reason I have to use this to reshape the DOK matrix
@@ -77,7 +77,7 @@ def hittingtime(Mlist):
 
 #        A.akeys = copy.deepcopy(a_key)
         A.updateAkeys()
-
+       # print("k1 = {}".format(k1))
         k2 = one + A.dot(k1)
         np.putmask(k2, mask, 0)
         print("Iteration",i)
