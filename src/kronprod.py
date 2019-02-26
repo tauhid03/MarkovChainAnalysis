@@ -64,7 +64,7 @@ class KronProd:
 # ------------
 
 if __name__ == '__main__':
-    n = 2 # number of factors
+    n = 3 # number of factors
     p = 4 # dimension of factor
     A = np.array([[.2,.4,0, .4],
               [.4, .2, .4, 0],
@@ -75,7 +75,6 @@ if __name__ == '__main__':
     r_As = [A for i in range(n)]
   #  As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
     x = np.random.rand(p**n)
-    x = np.array([.1,.2,.3,.4,.5,.6,.7,.8,.9,.1,.2,.3,.4,.5,.6,.7])
     print("X= {}".format(x))
 
     kp = KronProd(list(reversed(r_As)))
