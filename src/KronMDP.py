@@ -313,13 +313,17 @@ class KronPolicyIteration(KronMDP):
 
     def __init__(self, transitions, reward, discount, policy0=None,
                  max_iter=1000, eval_type=0, skip_check=False):
+        transitions[0] = transitions[0] * discount
+        for i in range(len(transitions)):
+            transitions[i] = _np.linalg.inv(transitions[i])
         # Initialise a policy iteration MDP.
         #
         # Set up the MDP, but don't need to worry about epsilon values
         KronMDP.__init__(self, transitions, reward, discount, None, max_iter,
                      skip_check=skip_check)
         # Check if the user has supplied an initial policy. If not make one.
-        transitions[0] = transitions[0] * discount
+
+
         if policy0 is None:
             # Initialise the policy to the one which maximises the expected
             # immediate reward
