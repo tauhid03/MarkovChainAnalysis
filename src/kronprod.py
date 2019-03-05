@@ -14,6 +14,7 @@ class KronProd:
     def __init__(self, As):
         self.As = As
         self.flat_A = np.concatenate([a.flatten() for a in self.As], axis=None)
+        #Take out identity of same size
         self.nmat = len(self.As)
         self.n = [len(a) for a in self.As] # dimensions of factors
         self.N = reduce(mul, self.n, 1) # size of final vector y = A*x
@@ -31,7 +32,13 @@ class KronProd:
                 I = inic
                 sum = 0.0
                 for t in range(nk): # dim of matrix k
-                    sum = sum + self.flat_A[I]*self.X[J]
+#                    if(self.flat_A[I] == 1):
+#                        print("A",I,J)
+                #    if((I-J) % 4 == 0 and (I in [0,5,10,15,16,21,26,31])):
+                #        print("B",I, J)
+                #        sum = sum + (1-(self.flat_A[I]*self.X[J]))
+                #    else:
+                    sum = sum + (self.flat_A[I] * self.X[J])
                     if DEBUG:
                         print ("I = {}, J = {}".format(I,J))
                     I = I + 1
@@ -71,19 +78,23 @@ if __name__ == '__main__':
               [0, .4, .2, .4],
               [.4, 0, .4, .2]])
 
-
+ #   A = np.eye(p,p)
     r_As = [A for i in range(n)]
+    i_as = [np.eye(p,p) for i in range(n)]
   #  As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
-    x = np.random.rand(p**n)
-    x = np.array([.1,.2,.3,.4,.5,.6,.7,.8,.9,.1,.2,.3,.4,.5,.6,.7])
-    print("X= {}".format(x))
+    #x = np.random.rand(p**n)
+  #  print("X= {}".format(x))
+    x = np.asarray(range(p**n))
 
-    kp = KronProd(list(reversed(r_As)))
-    Y = kp.dot(x)
-    print("Y = {}".format(Y))
+    kp1 = KronProd(list(reversed(i_as)))
+    Y1 = kp1.dot(x)
+
+    kp2 = KronProd(list(reversed(r_As)))
+    Y2 = kp2.dot(x)
+    print("Y = {}".format(Y1 - Y2))
 
     big_A = reduce(np.kron, r_As)
-    big_y = np.matmul(big_A, x)
+    big_y = np.matmul(np.eye(16,16) - big_A, x)
     print("full calc: ",big_y)
 
 
