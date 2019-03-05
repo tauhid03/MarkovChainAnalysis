@@ -56,11 +56,15 @@ class KronMDP(MDP):
     """A Markov Decision Problem, specialized for transition matrices
     represented as factored Kroenicker product.
 
-    Let ``S`` = the number of states, and ``A`` = the number of acions.
+    Let ``S`` = the number of states in one of the matrices in the Kroenicker
+    product, and ``A`` = the number of acions, and
+    ``N`` = the number of "agents" or factors in the Kroenicker product.
+    (Thus the overall state space of the problem will be size ``S^N``)
 
     Parameters
     ----------
     transitions : array
+        Transition matrices, with shape ``(A, N, S, S)``.
     reward : array
         Reward matrices or vectors. Like the transition matrices, these can
         also be defined in a variety of ways. Again the simplest is a numpy
@@ -129,7 +133,7 @@ class KronMDP(MDP):
     """
 
     def __init__(self, transitions, reward, discount, epsilon, max_iter,
-                 skip_check=False):
+                 skip_check=True):
         # Initialise a MDP based on the input parameters.
 
         # if the discount is None then the algorithm is assumed to not use it
@@ -156,6 +160,8 @@ class KronMDP(MDP):
             self.epsilon = float(epsilon)
             assert self.epsilon > 0, "Epsilon must be greater than 0."
 
+        # this will fail for Kroneicker representation right now - but we can
+        # write a new check function to make sure dimensions match
         if not skip_check:
             # We run a check on P and R to make sure they are describing an
             # MDP. If an exception isn't raised then they are assumed to be
