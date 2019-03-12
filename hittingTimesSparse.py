@@ -60,9 +60,6 @@ def hittingtime(Mlist):
         np.putmask(k2, mask, 0)
         print("Iteration",i)
         print(LA.norm(k1-k2))
-        if(i==20):
-            print("X = ",k1)
-            break
         i += 1
 
     print('Hitting Time',k2)
