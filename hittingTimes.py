@@ -1,9 +1,12 @@
 import numpy as np
 import time
 from numpy import linalg as LA
+import scipy
 
 from discreteMarkovChain import markovChain
-from kronprod import *
+from src.kronprod import *
+
+
 def fullKronProd(P,Q):
     PQ=np.zeros((len(P)*len(Q),len(P)*len(Q)))
     
