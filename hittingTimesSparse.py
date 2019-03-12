@@ -38,8 +38,6 @@ def hittingtime(Mlist):
     A = KronProdSparse(A1)
 
     hittingset = twoAgentHittingSet(A.n[0], len(A1))
-    print(hittingset)
-    print("[DEBUG] A.n[0] = {}, A.N = {}".format(A.n[0], A.N))
 
 
     one = np.ones(A.N)
@@ -52,36 +50,19 @@ def hittingtime(Mlist):
 
     k1 = np.zeros(A.N)
 
-#    X_csr = scipy.sparse.csr_matrix(k1) #For some reason I have to use this to reshape the DOK matrix
-#    X_dok = scipy.sparse.dok_matrix(k1.reshape(X_csr.shape))
-#    x_keys = X_dok.keys()
-#    x_keys.sort(key=itemgetter(1))
-#    a_keys = A2_dok.keys()
-#    a_keys.sort(key=itemgetter(1))
-#    A.akeys = copy.deepcopy(a_keys)
-#    A.X = copy.deepcopy(k1)
-
     k2 = one + A.dot(k1)
-
     i= 0
-    print("K2 is {}".format(k2))
     while(LA.norm(k1-k2)>.1):
+        A = KronProdSparse(A1)
         k1=k2
-
-#        X_csr = scipy.sparse.csr_matrix(k1) #For some reason I have to use this to reshape the DOK matrix
-#        X_dok = scipy.sparse.dok_matrix(k1.reshape(X_csr.shape))
-#        x_keys = X_dok.keys()
-#        x_keys.sort(key=itemgetter(1))
-#        A.xkeys = copy.deepcopy(x_keys)
-#        A.X = copy.deepcopy(k1)
-
-#        A.akeys = copy.deepcopy(a_key)
-        A.updateAkeys()
-       # print("k1 = {}".format(k1))
+        print("k1 = {}".format(k1))
         k2 = one + A.dot(k1)
         np.putmask(k2, mask, 0)
         print("Iteration",i)
         print(LA.norm(k1-k2))
+        if(i==20):
+            print("X = ",k1)
+            break
         i += 1
 
     print('Hitting Time',k2)
@@ -349,8 +330,8 @@ def main():
     [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 ],
     [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.15 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.7 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.15 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]])
 
-    csv1 = 'markov1_100.csv'
-    csv2 = 'markov1_100.csv'
+#    csv1 = 'markov1_100.csv'
+#    csv2 = 'markov1_100.csv'
    # csv1 = 'markov1.csv'
 #    M1 = np.genfromtxt(csv1, delimiter=',')
 #    M1 = M1[1:,:]
@@ -362,7 +343,7 @@ def main():
 
     time_start = time.time()
     out = hittingtime(Mlist)
-    np.savetxt("hittingtimeSparse_1x1.csv", out, delimiter=",")
+#    np.savetxt("hittingtimeSparse_1x1.csv", out, delimiter=",")
     print("Total time = {}".format(time.time() - time_start))
    
 

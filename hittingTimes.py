@@ -5,7 +5,6 @@ from numpy import linalg as LA
 from discreteMarkovChain import markovChain
 from kronprod import *
 
-
 def fullKronProd(P,Q):
     PQ=np.zeros((len(P)*len(Q),len(P)*len(Q)))
     
@@ -32,16 +31,13 @@ def twoAgentHittingSet(n,p):
 # pass in list of nxn matrices
 def hittingtime(Mlist):
     #Plist = [np.array(markovChain(m).getTransitionMatrix()) for m in Mlist]
-    Plist = Mlist
+    Plist = list(reversed(Mlist))
     A = KronProd(Plist)
 
     hittingset = twoAgentHittingSet(A.n[0], len(Plist))
-    print(hittingset)
 
-    print("[DEBUG] A.n[0] = {}, A.N = {}".format(A.n[0], A.N))
     one = np.ones(A.N)
     one[hittingset] = 0
-    print("one = {}".format(one))
 
     mask = np.zeros(A.N)
     for i in range(A.N):
@@ -49,17 +45,19 @@ def hittingtime(Mlist):
             mask[i]=1
 
     k1 = np.zeros(A.N)
-    print("k1 shape = {}".format(k1.shape))
     k2 = one + A.dot(k1)
-    print("K2 is {}".format(k2))
     i = 0
     while(LA.norm(k1-k2)>.1):
+        A = KronProd(Plist)
         k1=k2
         print("k1 = {}".format(k1))
         k2 = one + A.dot(k1)
         np.putmask(k2, mask, 0)
         print("Iteration",i)
         print(LA.norm(k1-k2))
+        if(i==20):
+            print("X = ",k1)
+            break
         i += 1
 
     print('Hitting Time',k2)
@@ -328,8 +326,8 @@ def main():
     [ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.15 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.7 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.15 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]])
 
    
-    csv1 = '2018-07-22-jw-weaselball_analysis_markov1_100.csv'
-    csv2 = '2018-07-22-jw-weaselball_analysis_markov1_100.csv'
+    #csv1 = '2018-07-22-jw-weaselball_analysis_markov1_100.csv'
+    #csv2 = '2018-07-22-jw-weaselball_analysis_markov1_100.csv'
    # csv1 = 'markov1.csv'
 #    M1 = np.genfromtxt(csv1, delimiter=',')
 #    M1 = M1[1:,:]
@@ -342,7 +340,7 @@ def main():
 
     time_start = time.time()
     out = hittingtime(Mlist)
-    np.savetxt("out/TEST.csv", out, delimiter=",")
+#    np.savetxt("out/TEST.csv", out, delimiter=",")
     print("total time = {}".format(time.time() - time_start))
 
    

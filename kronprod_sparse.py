@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python"
 # Code implementing "Efficient Computer Manipulation of Tensor Products..."
 # Pereyra Scherer
 # Assumes all factor matrices square, identical size
@@ -11,6 +11,7 @@ from operator import itemgetter
 import scipy.sparse
 import copy
 import time
+from makeMarkovMatrix import createSparseMatrix, m_test 
 
 DEBUG = False 
 TIMING_ANALYSIS = False
@@ -40,6 +41,19 @@ class KronProdSparse:
         self.counter = 0 #Used to determine how many multiplications were performed
         if DEBUG:
             print("Shape is {}".format(self.n[0]**self.nmat))
+
+    #This is used for debugging
+    def printProperties(self):
+        print("self.as = ", self.As)
+        print("self.nmat = ", self.nmat)
+        print("self.n = ", self.n)
+        print("self.N = ", self.N)
+        print("self.Y = ", self.Y)
+        print("self.xval = ", self.xval)
+        print("self.X = ", self.X)
+        print("self.flat_As = ", self.flat_As)
+        print("self.akeys = ", self.akeys)
+        print("self.akeys_full = ", self.akeys_full)
 
     def updateAkeys(self):
         self.akeys = copy.deepcopy(self.akeys_full)
@@ -123,6 +137,7 @@ class KronProdSparse:
 
     #Given a vector X, computes the dot product of A.X (A is given when the object initializes). This function takes the X given and converts it to a DOK matrix in order to get its' keys. The DOK matrix representation is never used because X tends to not be sparse and takes longer to access individual elements when compared to the regular numpy matrix. This function then runs the algorithm as given in the paper.   
     def dot(self, X):
+        #self.printProperties()
         X = X.astype(float)
         if self.As == None:
             print("[Error] No A given")
@@ -149,14 +164,14 @@ class KronProdSparse:
         if DEBUG:
             print("Total operations = {}".format(self.counter))
 
+        print("________________RESULTS___________________")
         print("[DEBUG] Y = {}, sum = {}".format(self.Y, np.sum(self.Y)))
         return self.Y
 
 #BenchmarkTestSparse is used to create a function that can test the implementation of the sparse kronnecker product code. This function creans n identity matrices of size (p,p) and performs the kronnecker product on these matrices. A random X is generated and the equation y = Ax is solved where A is the kronnecker product of the n identity matrices.
 def benchmarkTestSparse(n,p):
-    print("FOOBART")
     #Create the matrices 
-    markov_matrices = [np.identity(p) for i in range(n)]
+    markov_matrices = [createSparseMatrix(N=p, percentEmpty=0.95) for i in range(n)]
     #Create a random x vector
     X = np.random.rand(p**n)
     #Create object
@@ -166,8 +181,41 @@ def benchmarkTestSparse(n,p):
         big_A = reduce(np.kron, markov_matrices)
         big_y = np.matmul(big_A, X)
         print("full calc: ",big_y)
+        print("Markov_matrices = ", markov_matrices)
+        print("X = ", X)
+        if (np.allclose(big_y, Y)):
+            print("[Sparse] Results are close!")
+            return 1
+        else:
+            print("[Sparse] Results Failed!")
+            return 0
+def sparseFail():
+    markov_matrices = m_test
+    n = len(markov_matrices)
+    p = markov_matrices[0].shape[0]
+    X = np.random.rand(p**n)
+    kp = KronProdSparse(markov_matrices)
+    Y = kp.dot(X)
+    if DEBUG:
+        big_A = reduce(np.kron, markov_matrices)
+        big_y = np.matmul(big_A, X)
+        print("full calc: ",big_y)
+        print("Markov_matrices = ", markov_matrices)
+        print("X = ", X)
+        if (np.allclose(big_y, Y)):
+            print("[Sparse] Results are close!")
+            return 1
+        else:
+            print("[Sparse] Results Failed!")
+            return 0
+
 
 if __name__ == '__main__':
-       benchmarkTestSparse(2,4) 
+    sparseFail()
+  #  testsToRun = 25
+  #  for _ in range(testsToRun):
+  #      results = benchmarkTestSparse(2,128) 
+  #      if results == 0:
+  #          break
 
 
