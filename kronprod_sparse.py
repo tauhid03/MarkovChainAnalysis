@@ -30,11 +30,12 @@ class KronProdSparse:
         markov_matrices_csr = scipy.sparse.csr_matrix(self.flat_As) #For some reason I have to use this to reshape the DOK matrix
         markov_matrices_dok = scipy.sparse.dok_matrix(self.flat_As.reshape(markov_matrices_csr.shape))
         #Get A keys and sort them.
-        a_keys = markov_matrices_dok.keys()
-        a_keys.sort(key=itemgetter(1))
+        a_keys = list(markov_matrices_dok.keys())
+#        a_keys.sort(key=itemgetter(1))
+        sorted(a_keys, key=itemgetter(1))
 
         self.akeys = a_keys
-        self.akeys_full = copy.deepcopy(self.akeys)
+        self.akeys_full = copy.deepcopy((self.akeys))
 
         self.counter = 0 #Used to determine how many multiplications were performed
         if DEBUG:
@@ -132,8 +133,9 @@ class KronProdSparse:
         X_dok = scipy.sparse.dok_matrix(X.reshape(X_csr.shape))
 
         #Get X keys
-        x_keys = X_dok.keys()
-        x_keys.sort(key=itemgetter(1))
+        x_keys = list(X_dok.keys())
+      #  x_keys.sort(key=itemgetter(1))
+        sorted(x_keys, key=itemgetter(1))
 
         k = self.nmat
         nk = self.n[k-1]
@@ -152,6 +154,7 @@ class KronProdSparse:
 
 #BenchmarkTestSparse is used to create a function that can test the implementation of the sparse kronnecker product code. This function creans n identity matrices of size (p,p) and performs the kronnecker product on these matrices. A random X is generated and the equation y = Ax is solved where A is the kronnecker product of the n identity matrices.
 def benchmarkTestSparse(n,p):
+    print("FOOBART")
     #Create the matrices 
     markov_matrices = [np.identity(p) for i in range(n)]
     #Create a random x vector
@@ -160,9 +163,9 @@ def benchmarkTestSparse(n,p):
     kp = KronProdSparse(markov_matrices)
     Y = kp.dot(X)
     if DEBUG:
-        y_keys = Y.keys()
-        y_keys.sort(key=itemgetter(1))
-        print("Y = ", y_keys)
+        big_A = reduce(np.kron, markov_matrices)
+        big_y = np.matmul(big_A, X)
+        print("full calc: ",big_y)
 
 if __name__ == '__main__':
        benchmarkTestSparse(2,4) 
