@@ -2,8 +2,8 @@ import numpy as np
 from numpy import linalg as LA
 import time
 from discreteMarkovChain import markovChain
-from kronprod_sparse import *
-from kronprod import *
+from src.kronprod_sparse import *
+from src.kronprod import *
 import copy
 
 
@@ -53,7 +53,6 @@ def hittingtime(Mlist):
     k2 = one + A.dot(k1)
     i= 0
     while(LA.norm(k1-k2)>.1):
-        A = KronProdSparse(A1)
         k1=k2
         print("k1 = {}".format(k1))
         k2 = one + A.dot(k1)

@@ -164,6 +164,7 @@ class KronProdSparse:
         if DEBUG:
             print("Total operations = {}".format(self.counter))
 
+        self.updateAkeys()
         print("________________RESULTS___________________")
         print("[DEBUG] Y = {}, sum = {}".format(self.Y, np.sum(self.Y)))
         return self.Y
@@ -189,33 +190,13 @@ def benchmarkTestSparse(n,p):
         else:
             print("[Sparse] Results Failed!")
             return 0
-def sparseFail():
-    markov_matrices = m_test
-    n = len(markov_matrices)
-    p = markov_matrices[0].shape[0]
-    X = np.random.rand(p**n)
-    kp = KronProdSparse(markov_matrices)
-    Y = kp.dot(X)
-    if DEBUG:
-        big_A = reduce(np.kron, markov_matrices)
-        big_y = np.matmul(big_A, X)
-        print("full calc: ",big_y)
-        print("Markov_matrices = ", markov_matrices)
-        print("X = ", X)
-        if (np.allclose(big_y, Y)):
-            print("[Sparse] Results are close!")
-            return 1
-        else:
-            print("[Sparse] Results Failed!")
-            return 0
 
 
 if __name__ == '__main__':
-    sparseFail()
-  #  testsToRun = 25
-  #  for _ in range(testsToRun):
-  #      results = benchmarkTestSparse(2,128) 
-  #      if results == 0:
-  #          break
+    testsToRun = 25
+    for _ in range(testsToRun):
+        results = benchmarkTestSparse(2,128) 
+        if results == 0:
+            break
 
 
