@@ -50,7 +50,6 @@ def hittingtime(Mlist):
     k2 = one + A.dot(k1)
     i = 0
     while(LA.norm(k1-k2)>.1):
-        A = KronProd(Plist)
         k1=k2
         print("k1 = {}".format(k1))
         k2 = one + A.dot(k1)
