@@ -2,8 +2,8 @@ import numpy as np
 from numpy import linalg as LA
 import time
 from discreteMarkovChain import markovChain
-from kronprod_sparse import *
-from kronprod import *
+from src.kronprod_sparse import *
+from src.kronprod import *
 import copy
 
 
