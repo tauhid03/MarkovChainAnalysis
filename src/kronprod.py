@@ -14,7 +14,8 @@ class KronProd:
     def __init__(self, As):
         self.As = As
         self.flat_A = np.concatenate([a.flatten() for a in self.As], axis=None)
-        #Take out identity of same size
+        if DEBUG:
+            print(self.flat_A)
         self.nmat = len(self.As)
         self.n = [len(a) for a in self.As] # dimensions of factors
         self.N = reduce(mul, self.n, 1) # size of final vector y = A*x
@@ -43,6 +44,7 @@ class KronProd:
                         print ("I = {}, J = {}".format(I,J))
                     I = I + 1
                     J = J + 1
+            #    print("Sum = {}".format(sum))
                 self.Y[ktemp] = sum
                 if DEBUG:
                     print("Sum = {}".format(sum))
@@ -65,6 +67,9 @@ class KronProd:
                 print("mk: ", mk)
             mk = self.N/self.n[k-1-ki]
             self.contract(nk, mk, ki)
+        print("________________RESULTS___________________")
+        print("[DEBUG] Y = {}, sum = {}".format(self.Y, np.sum(self.Y)))
+
         return self.Y
 
 # Example code
