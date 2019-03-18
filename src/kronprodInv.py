@@ -1,4 +1,11 @@
-from src.kronprod import KronProd
+
+from scipy.stats import ortho_group
+from pathlib import Path
+try: 
+    print(Path('/home/username').parent)
+    from src.kronprod import KronProd
+except Exception as e:
+    from kronprod import KronProd
 import numpy as np
 from operator import mul
 from functools import reduce
@@ -6,8 +13,12 @@ from functools import reduce
 def is_invertible(a):
     return a.shape[0] == a.shape[1] and np.linalg.matrix_rank(a) == a.shape[0]
 
+
 class KronProdInv(KronProd):
     def __init__(self, As):
+        if len(As) == 0:
+            assert "[KronProdInv] Empty list of matrix given to KronProdInv"
+        print("size",len(As))
         As_inv = []
         inv_flag = 1
         for A in As:
@@ -27,25 +38,23 @@ class KronProdInv(KronProd):
 
 
 if __name__ == '__main__':
-    n = 3 # number of factors
-    p = 4 # dimension of factor
-    A = np.array([[.2,.4,0, .4],
-              [.4, .2, .4, 0],
-              [0, .4, .2, .4],
-              [.4, 0, .4, .2]])
+    np.set_printoptions(threshold=np.nan)
+    n = 5#number of factors
+    p = 5 # dimension of factor
+    r_As = [ortho_group.rvs(dim=p) for i in range(n)]
+		#Make first and second row the same so that way it becomes a non-invertible matrix
+    for A in r_As:
+        A[1,:] = A[0,:]
+    As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
+    y = np.random.rand(p**n)
 
+    big_A = reduce(np.kron, As)
+    big_A_inv = np.linalg.pinv(big_A)
+    big_x = big_A_inv.dot(y)
+    print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
 
-    r_As = [A for i in range(n)]
-  #  As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
-    x = np.random.rand(p**n)
-    print("X= {}".format(x))
+    kp = KronProdInv(list(reversed(As)))
+    x = kp.dot(y)
+    print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
 
-    kp = KronProdInv(list(reversed(r_As)))
-    Y = kp.dot(x)
-    print("Y = {}".format(Y))
-
-    big_A = reduce(np.kron, r_As)
-    big_y = np.linalg.solve(big_A, x)
-    print("full calc: ",big_y)
-    print(x.shape, big_A.shape, big_y.shape)
-
+    print(np.allclose(x,big_x))

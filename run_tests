@@ -1,4 +1,4 @@
 # command for running test set
 # requires python package "unittest" to be installed
 
-python -m unittest
+python -m unittest discover test/

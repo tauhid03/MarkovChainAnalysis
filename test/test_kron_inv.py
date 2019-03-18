@@ -1,8 +1,9 @@
 #! /usr/bin/env python
 
+
+from scipy.stats import ortho_group
 import unittest
 import numpy as np
-from scipy.stats import ortho_group
 from pathlib import Path
 print(Path('/home/username').parent)
 from src.kronprodInv import KronProdInv
