@@ -1,6 +1,7 @@
 from mdptoolbox.example import rand
 from mdptoolbox.mdp import ValueIteration, PolicyIteration, _LP
-from src.KronMDP import multiagent, multiagent_full, KronValueIteration, KronPolicyIteration
+from examples.MDP_models import multiagent, multiagent_full
+from src.KronMDP import KronValueIteration, KronPolicyIteration
 from timeit import default_timer as timer
 from functools import reduce
 

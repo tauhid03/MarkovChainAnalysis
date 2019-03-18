@@ -139,7 +139,7 @@ class KronProdSparse:
     def dot(self, X):
         #self.printProperties()
         X = X.astype(float)
-        if self.As == None:
+        if self.As == []:
             print("[Error] No A given")
         #Need to save value of X in class because it is used to store iterative calculations
         self.X = X

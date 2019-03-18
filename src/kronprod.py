@@ -67,8 +67,9 @@ class KronProd:
                 print("mk: ", mk)
             mk = self.N/self.n[k-1-ki]
             self.contract(nk, mk, ki)
-        print("________________RESULTS___________________")
-        print("[DEBUG] Y = {}, sum = {}".format(self.Y, np.sum(self.Y)))
+        if DEBUG:
+            print("________________RESULTS___________________")
+            print("[DEBUG] Y = {}, sum = {}".format(self.Y, np.sum(self.Y)))
 
         return self.Y
 
