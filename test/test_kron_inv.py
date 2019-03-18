@@ -3,6 +3,8 @@
 import unittest
 import numpy as np
 from scipy.stats import ortho_group
+from pathlib import Path
+print(Path('/home/username').parent)
 from src.kronprodInv import KronProdInv
 from functools import reduce
 class TestKronInv(unittest.TestCase):
@@ -85,11 +87,11 @@ class TestKronInv(unittest.TestCase):
         big_A = reduce(np.kron, As)
         big_A_inv = np.linalg.pinv(big_A)
         big_x = big_A_inv.dot(y)
-        print("full calc: ",big_x)
+        print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
 
         kp = KronProdInv(list(reversed(As)))
         x = kp.dot(y)
-        print("efficient calc: ", x)
+        print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
 
         np.testing.assert_almost_equal(big_x, x, decimal=7, verbose=True)
 

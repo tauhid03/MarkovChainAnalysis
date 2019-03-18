@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 
 import unittest
-
+from pathlib import Path
+print(Path('/home/username').parent)
 from src.kronprod_sparse import *
 
 class TestKronSparse(unittest.TestCase):
