@@ -2,6 +2,7 @@ from src.KronMDP import KronValueIteration
 from examples.MDP_models import env1, mkRendezvousMDP, types1
 from timeit import default_timer as timer
 from functools import reduce
+import click
 
 
 def example_two_obstacles(N):
@@ -13,5 +14,11 @@ def example_two_obstacles(N):
     print("kronecker method took", end-start,"seconds")
     print(vi.policy)
 
-if __name__ == "__main__":
-    example_two_obstacles(4)
+
+@click.command()
+@click.option('--num_agents', '-n', default=2)
+def run_example(num_agents):
+    example_two_obstacles(num_agents)
+
+if __name__ == '__main__':
+    run_example()
