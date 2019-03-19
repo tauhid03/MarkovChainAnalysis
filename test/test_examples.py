@@ -50,7 +50,7 @@ class TestExamples(unittest.TestCase):
     def test_encode_decode(self):
         cell = randint(0,15)
         dir = randint(0,3)
-        cell2, dir2 = decode_state(encode_state(cell, dir, env1), env1)
+        cell2, dir2 = decode_state(encode_state(cell, env1, dir), env1)
         self.assertEqual(cell, cell2)
         self.assertEqual(dir, dir2)
 
