@@ -8,6 +8,8 @@ except Exception as e:
     from kronprod import KronProd
 import numpy as np
 from operator import mul
+from fail import As_fail
+from fail import Y_fail 
 from functools import reduce
 
 def is_invertible(a):
@@ -36,25 +38,56 @@ class KronProdInv(KronProd):
         #If it isn't use psuedoInverse
         super().__init__(As_inv)
 
-
-if __name__ == '__main__':
-    np.set_printoptions(threshold=np.nan)
-    n = 5#number of factors
-    p = 5 # dimension of factor
+def runTest():
+    n = 4#number of factors
+    p = 4 # dimension of factor
     r_As = [ortho_group.rvs(dim=p) for i in range(n)]
 		#Make first and second row the same so that way it becomes a non-invertible matrix
     for A in r_As:
         A[1,:] = A[0,:]
     As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
+    print("As = ", As)
     y = np.random.rand(p**n)
+    print("Y = ", y)
 
     big_A = reduce(np.kron, As)
     big_A_inv = np.linalg.pinv(big_A)
     big_x = big_A_inv.dot(y)
-    print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
+ #   print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
 
     kp = KronProdInv(list(reversed(As)))
     x = kp.dot(y)
-    print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
+ #   print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
+    print("All_close=",np.allclose(x,big_x))
 
-    print(np.allclose(x,big_x))
+    return(np.allclose(x,big_x))
+
+def fail():
+    n = 4#number of factors
+    p = 4 # dimension of factor
+    As = As_fail
+    y = Y_fail
+
+    big_A = reduce(np.kron, As)
+    big_A_inv = np.linalg.pinv(big_A)
+    big_x = big_A_inv.dot(y)
+ #   print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
+
+    kp = KronProdInv(list(reversed(As)))
+    x = kp.dot(y)
+ #   print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
+    print("All_close=",np.allclose(x,big_x))
+
+
+
+if __name__ == '__main__':
+    np.set_printoptions(threshold=np.nan)
+    fail()
+#    for i in range(50000):
+#        try:
+#            results = runTest()
+#        except Exception as e:
+#            print(e)
+#            results = True
+#        if(results == False):
+#            break
