@@ -150,7 +150,7 @@ States are then indexed n + M*O
 
 '''
 
-def encode_state(gridcell, dir, env):
+def encode_state(gridcell, env, dir=0):
     return gridcell + len(env)*dir
 
 
@@ -198,21 +198,19 @@ regardless of orientation.
 
 Assumes grid cells are much larger than agents.
 '''
-def mkRendezvousReward(env, N, S):
+def mkRendezvousReward(env, N, S, dir=0):
 
     X = S**N
     R = _np.full((S**N), -1.0)
-    for cell in range(len(env)):
-        for dir in range(4):
-            state = encode_state(cell, dir, env)
-            states = [state for robot in range(N)]
-            R[encodeJointState(states, env, N-1, S)] = 1.0
+    for state in range(len(env)):
+        states = [state for robot in range(N)]
+        R[encodeJointState(states, env, N-1, S)] = 1.0
     return R
 
 def mkRendezvousMDP(env, N, types=types1):
     S = len(env)*4
     Ps = mkTransitions(env, types, N, S, gridworld_step_prob_w_dirs)
-    R = mkRendezvousReward(env, N, S)
+    R = mkRendezvousReward(env, N, S, dir=4)
     return Ps, R
 
 
