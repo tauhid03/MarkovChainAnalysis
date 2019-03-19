@@ -4,11 +4,12 @@
 # Assumes all factor matrices square, identical size
 # TODO use pycontracts to enforce this ^
 
+from scipy.stats import ortho_group
 import numpy as np
 from operator import mul
 from functools import reduce
 
-DEBUG = False
+DEBUG = False 
 
 class KronProd:
     def __init__(self, As):
@@ -77,30 +78,25 @@ class KronProd:
 # ------------
 
 if __name__ == '__main__':
-    n = 2 # number of factors
-    p = 4 # dimension of factor
-    A = np.array([[.2,.4,0, .4],
-              [.4, .2, .4, 0],
-              [0, .4, .2, .4],
-              [.4, 0, .4, .2]])
 
- #   A = np.eye(p,p)
-    r_As = [A for i in range(n)]
-    i_as = [np.eye(p,p) for i in range(n)]
-  #  As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
-    #x = np.random.rand(p**n)
-  #  print("X= {}".format(x))
-    x = np.asarray(range(p**n))
+    n = 5#number of factors
+    p = 5 # dimension of factor
+    r_As = [ortho_group.rvs(dim=p) for i in range(n)]
+		#Make first and second row the same so that way it becomes a non-invertible matrix
+    for A in r_As:
+        A[1,:] = A[0,:]
+    As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
+    y = np.random.rand(p**n)
 
-    kp1 = KronProd(list(reversed(i_as)))
-    Y1 = kp1.dot(x)
+    big_A = reduce(np.kron, As)
+    big_x = big_A.dot(y)
+    print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
 
-    kp2 = KronProd(list(reversed(r_As)))
-    Y2 = kp2.dot(x)
-    print("Y = {}".format(Y1 - Y2))
+    kp = KronProd(list(reversed(As)))
+    x = kp.dot(y)
+    print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
 
-    big_A = reduce(np.kron, r_As)
-    big_y = np.matmul(np.eye(16,16) - big_A, x)
-    print("full calc: ",big_y)
+    print(np.allclose(x,big_x))
+
 
 

@@ -11,9 +11,9 @@ from operator import itemgetter
 import scipy.sparse
 import copy
 import time
-from makeMarkovMatrix import createSparseMatrix, m_test 
+#from makeMarkovMatrix import createSparseMatrix, m_test 
 
-DEBUG = False 
+DEBUG = False
 TIMING_ANALYSIS = False
 
 class KronProdSparse:
@@ -33,7 +33,7 @@ class KronProdSparse:
         #Get A keys and sort them.
         a_keys = list(markov_matrices_dok.keys())
 #        a_keys.sort(key=itemgetter(1))
-        sorted(a_keys, key=itemgetter(1))
+        a_keys = sorted(a_keys, key=itemgetter(1))
 
         self.akeys = a_keys
         self.akeys_full = copy.deepcopy((self.akeys))
@@ -150,7 +150,7 @@ class KronProdSparse:
         #Get X keys
         x_keys = list(X_dok.keys())
       #  x_keys.sort(key=itemgetter(1))
-        sorted(x_keys, key=itemgetter(1))
+        x_keys = sorted(x_keys, key=itemgetter(1))
 
         k = self.nmat
         nk = self.n[k-1]
@@ -194,10 +194,13 @@ def benchmarkTestSparse(n,p):
 
 
 if __name__ == '__main__':
-    testsToRun = 25
-    for _ in range(testsToRun):
-        results = benchmarkTestSparse(2,128) 
-        if results == 0:
-            break
+
+    A1 = [ np.array([[1., 1.], [1.,1.]]),
+	    np.array([[1.,1.], [1.,1.]])]
+    x1 = np.array([1.,1.,1.,1.])
+    y1 = np.array([4.,4.,4.,4.])
+    kp = KronProdSparse(A1)
+    y = kp.dot(x1)
+    print(y,y1)
 
 

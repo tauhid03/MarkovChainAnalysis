@@ -1,8 +1,12 @@
 #! /usr/bin/env python
 
 import unittest
+from pathlib import Path
 
-from src.kronprod import *
+print(Path('/home/username').parent)
+import numpy as np
+from functools import reduce
+from src.kronprod import KronProd
 
 class TestKron(unittest.TestCase):
 
