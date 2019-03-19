@@ -27,7 +27,7 @@ def example_one_obstacle_6_states(N):
 @click.command()
 @click.option('--num_agents', '-n', default=2)
 def run_example(num_agents):
-    example_two_obstacles(num_agents)
+    example_one_obstacle_6_states(num_agents)
 
 if __name__ == '__main__':
     run_example()
