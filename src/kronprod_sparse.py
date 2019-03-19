@@ -168,7 +168,7 @@ class KronProdSparse:
         if DEBUG:
             print("________________RESULTS___________________")
             print("[DEBUG] Y = {}, sum = {}".format(self.Y, np.sum(self.Y)))
-            return self.Y
+        return self.Y
 
 #BenchmarkTestSparse is used to create a function that can test the implementation of the sparse kronnecker product code. This function creans n identity matrices of size (p,p) and performs the kronnecker product on these matrices. A random X is generated and the equation y = Ax is solved where A is the kronnecker product of the n identity matrices.
 def benchmarkTestSparse(n,p):
