@@ -8,8 +8,8 @@ except Exception as e:
     from kronprod import KronProd
 import numpy as np
 from operator import mul
-from fail import As_fail
-from fail import Y_fail 
+#from fail import As_fail
+#from fail import Y_fail 
 from functools import reduce
 
 def is_invertible(a):
@@ -67,15 +67,18 @@ def fail():
     p = 4 # dimension of factor
     As = As_fail
     y = Y_fail
+    As2 = []
+    for a in As:
+        As2.append(np.linalg.pinv(a))
+        
 
-    big_A = reduce(np.kron, As)
-    big_A_inv = np.linalg.pinv(big_A)
-    big_x = big_A_inv.dot(y)
- #   print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
+    big_A = reduce(np.kron, As2)
+    big_x = big_A.dot(y)
+    print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
 
     kp = KronProdInv(list(reversed(As)))
     x = kp.dot(y)
- #   print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
+    print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
     print("All_close=",np.allclose(x,big_x))
 
 

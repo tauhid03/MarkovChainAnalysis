@@ -1,3 +1,4 @@
+#This is a case where (A_1 kron A_2)^+ = A_1^+ kron A_2^+ fails.
 import numpy as np
 
 As_fail = [np.array([[ 1.35134806,  0.32022911, -0.66384512, -0.00773205],

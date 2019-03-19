@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-
+from fail import As_fail, Y_fail
 from scipy.stats import ortho_group
 import unittest
 import numpy as np
@@ -62,9 +62,11 @@ class TestKronInv(unittest.TestCase):
         A1 = [ np.array([[1.0, 0.0], [0.0,0.0]]),
                     np.array([[1.,1.], [0.,0.]])]
         y1 = np.array([1.,2.,3.,4.])
-        big_A = reduce(np.kron, A1)
-        big_A_inv = np.linalg.pinv(big_A)
-        big_x = big_A_inv.dot(y1)
+        A1_inv = []
+        for a in A1:
+            A1_inv.append(np.linalg.pinv(a))
+        big_A = reduce(np.kron, A1_inv)
+        big_x = big_A.dot(y1)
         print("FOO")
         print("full calc: ",big_x)
         kp = KronProdInv(list(reversed(A1)))
@@ -84,10 +86,12 @@ class TestKronInv(unittest.TestCase):
             A[1,:] = A[0,:]
         As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
         y = np.random.rand(p**n)
+        As_inv = []
+        for a in As:
+            As_inv.append(np.linalg.pinv(a))
 
-        big_A = reduce(np.kron, As)
-        big_A_inv = np.linalg.pinv(big_A)
-        big_x = big_A_inv.dot(y)
+        big_A = reduce(np.kron, As_inv)
+        big_x = big_A.dot(y)
         print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
 
         kp = KronProdInv(list(reversed(As)))
@@ -108,6 +112,24 @@ class TestKronInv(unittest.TestCase):
         kp = KronProdInv(list(reversed(As)))
         Y = kp.dot(x)
         print("efficient calc: ", Y)
+
+    def testFail(self):
+        #For some reason this breaks the property of kron product - (A_1 kron A_2)^+ = A_1^+ kron A_2^+
+        #The equivalent test for this is testRandom_pInv, but the reduce is performed after pinv. If it isn't then we get this error.
+        #This error didn't seem to happen for n=p=3 or 2 but does occur sometimes when n=p=4 and somewhat frequently when n=p=5.
+        n = 4
+        p = 4
+        As = As_fail
+        y = Y_fail
+        big_A = reduce(np.kron, As)
+        big_A_inv = np.linalg.pinv(big_A)
+        big_x = big_A_inv.dot(y)
+        kp = KronProdInv(list(reversed(As)))
+        x = kp.dot(y)
+        if(np.allclose(x,big_x) == False):
+            return True
+        else:
+            return False
 
 
 
