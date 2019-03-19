@@ -5,50 +5,10 @@ import time as _time
 from mdptoolbox.mdp import MDP, _printVerbosity, _MSG_STOP_EPSILON_OPTIMAL_POLICY, _MSG_STOP_MAX_ITER, _MSG_STOP_EPSILON_OPTIMAL_VALUE
 import mdptoolbox.util as _util
 from src.kronprod import KronProd
+from src.kronprod_sparse import KronProdSparse
 from functools import reduce
 import scipy.sparse as _sp
 
-# returns Ps as an array, indexed first by action and then by subsystem
-# action 0 makes agents slow (tend to stay in same state)
-# action 1 make agents fast (tend to move to one of the neighboring states)
-def multiagent(S=10, N=4, pslow = 0.9, pfast = 0.2):
-    """Generate a MDP example for N random agents, each with state space size S
-       Assume two actions: fast or slow
-    """
-    assert S > 1, "The number of states S must be greater than 1."
-    assert N > 1, "The number of agents N must be greater than 1."
-    # Definition of Transition matrices
-    Ps = _np.zeros((2,N,S,S))
-    for i in range(N):
-        Ps[0][i] = _np.zeros((S, S))
-        Ps[0][i][:, :] += (1 - pslow)/2 * _np.diag(_np.ones(S - 1), 1)
-        Ps[0][i][:, :] += (1 - pslow)/2 * _np.diag(_np.ones(S - 1), -1)
-        Ps[0][i][0, -1] += (1 - pslow)/2
-        Ps[0][i][-1, 0] += (1 - pslow)/2
-        Ps[0][i][:, :] += pslow * _np.diag(_np.ones(S))
-
-        Ps[1][i] = _np.zeros((S, S))
-        Ps[1][i][:, :] += (1 - pfast)/2 * _np.diag(_np.ones(S - 1), 1)
-        Ps[1][i][:, :] += (1 - pfast)/2 * _np.diag(_np.ones(S - 1), -1)
-        Ps[1][i][:, :] += pfast * _np.diag(_np.ones(S))
-        Ps[1][i][0, -1] += (1 - pfast)/2
-        Ps[1][i][-1, 0] += (1 - pfast)/2
-    # Definition of Reward matrix
-    # Reward for both agents is zero everywhere but in last state
-    R = _np.zeros((S**N, 2))
-    R[-1, 0] = 1
-    R[:, 1] = _np.zeros(S**N)
-    R[0, 1] = 0
-    R[S - 1, 1] = 1
-    return(Ps, R)
-
-def multiagent_full(S=10, N=4, pslow = 0.9, pfast = 0.2):
-    Ps, R = multiagent(S, N, pslow, pfast)
-    Ps0 = [P for P in Ps[0]]
-    Ps1 = [P for P in Ps[1]]
-    P0 = reduce(lambda x, y: _np.dot(x,y), _np.identity(S**N), Ps0)
-    P1 = reduce(lambda x, y: _np.dot(x,y), _np.identity(S**N), Ps1)
-    return [P0, P1], R
 
 # for kron problems, transition is a list of lists of arrays
 # first indexed by subsystem, then action
@@ -57,11 +17,15 @@ class KronMDP(MDP):
     """A Markov Decision Problem, specialized for transition matrices
     represented as factored Kroenicker product.
 
-    Let ``S`` = the number of states, and ``A`` = the number of acions.
+    Let ``S`` = the number of states in one of the matrices in the Kroenicker
+    product, and ``A`` = the number of actions, and
+    ``N`` = the number of "agents" or factors in the Kroenicker product.
+    (Thus the overall state space of the problem will be size ``S^N``)
 
     Parameters
     ----------
     transitions : array
+        Transition matrices, with shape ``(A, N, S, S)``.
     reward : array
         Reward matrices or vectors. Like the transition matrices, these can
         also be defined in a variety of ways. Again the simplest is a numpy
@@ -130,8 +94,9 @@ class KronMDP(MDP):
     """
 
     def __init__(self, transitions, reward, discount, epsilon, max_iter,
-                 skip_check=False):
+                 skip_check=True, sparse=False):
         # Initialise a MDP based on the input parameters.
+        self.sparse = sparse
 
         # if the discount is None then the algorithm is assumed to not use it
         # in its computations
@@ -157,6 +122,8 @@ class KronMDP(MDP):
             self.epsilon = float(epsilon)
             assert self.epsilon > 0, "Epsilon must be greater than 0."
 
+        # this will fail for Kroneicker representation right now - but we can
+        # write a new check function to make sure dimensions match
         if not skip_check:
             # We run a check on P and R to make sure they are describing an
             # MDP. If an exception isn't raised then they are assumed to be
@@ -164,8 +131,10 @@ class KronMDP(MDP):
             _util.check(transitions, reward)
 
         self.A = transitions.shape[0]
+        print("There are",self.A,"actions")
         self.P = self._computeTransition(transitions)
         self.S = self.P[0].N
+        print("The joint state space is size", self.S)
         self.R = self._computeReward(reward, transitions)
 
         # the verbosity is by default turned off
@@ -188,7 +157,20 @@ class KronMDP(MDP):
         return(P_repr + "\n" + R_repr)
 
     def _computeTransition(self, transition):
-        return tuple(KronProd(transition[a]) for a in range(self.A))
+        if self.sparse:
+            return tuple(KronProdSparse(transition[a]) for a in range(self.A))
+        else:
+            return tuple(KronProd(transition[a]) for a in range(self.A))
+
+    def _computeReward(self, reward, transition):
+        return self._computeVectorReward(reward)
+
+    def _computeVectorReward(self, reward):
+        if _sp.issparse(reward):
+            raise NotImplementedError
+        else:
+            r = _np.array(reward).reshape(self.S)
+            return tuple(r for a in range(self.A))
 
     def _bellmanOperator(self, V=None):
         # Apply the Bellman operator on the value function.
@@ -254,6 +236,7 @@ class KronMDP(MDP):
         """Set the MDP algorithm to verbose mode."""
         self.verbose = True
 
+
 class KronPolicyIteration(KronMDP):
 
     """A discounted MDP solved using the policy iteration algorithm.
@@ -312,7 +295,7 @@ class KronPolicyIteration(KronMDP):
     """
 
     def __init__(self, transitions, reward, discount, policy0=None,
-                 max_iter=1000, eval_type=0, skip_check=False):
+                 max_iter=1000, eval_type=0, skip_check=False, sparse=False):
         transitions[0] = transitions[0] * discount
         for i in range(len(transitions)):
             transitions[i] = _np.linalg.inv(transitions[i])
@@ -320,7 +303,7 @@ class KronPolicyIteration(KronMDP):
         #
         # Set up the MDP, but don't need to worry about epsilon values
         KronMDP.__init__(self, transitions, reward, discount, None, max_iter,
-                     skip_check=skip_check)
+                     skip_check=skip_check, sparse=sparse)
         # Check if the user has supplied an initial policy. If not make one.
 
 
@@ -632,11 +615,12 @@ class KronValueIteration(KronMDP):
     """
 
     def __init__(self, transitions, reward, discount, epsilon=0.01,
-                 max_iter=1000, initial_value=0, skip_check=False):
+                 max_iter=1000, initial_value=0, skip_check=False,
+                 sparse=False):
         # Initialise a value iteration MDP.
 
         KronMDP.__init__(self, transitions, reward, discount, epsilon, max_iter,
-                     skip_check=skip_check)
+                     skip_check=skip_check, sparse=sparse)
 
         # initialization of optional arguments
         if initial_value == 0:

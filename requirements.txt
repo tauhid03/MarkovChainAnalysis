@@ -1,3 +1,4 @@
 git+git://github.com/sawcordwell/pymdptoolbox@7c96789cc80e280437005c12065cf70266c11636
 tarjan
 discreteMarkovChain
+click
