@@ -48,10 +48,11 @@ class TestExamples(unittest.TestCase):
         np.testing.assert_almost_equal(calcd, output, decimal=7, verbose=True)
 
     def test_encode_decode(self):
-        cell = randint(0,15)
-        dir = randint(0,3)
-        cell2, dir2 = decode_state(encode_state(cell, env1, dir), env1)
-        self.assertEqual(cell, cell2)
-        self.assertEqual(dir, dir2)
+        N = randint(2,10)
+        X = randint(5,10)
+        states = np.random.choice(np.arange(X, dtype=np.uint), N)
+        state_int = encodeJointState(states, X)
+        decoded = decodeJointState(state_int, N, X)
+        np.testing.assert_almost_equal(states, decoded, decimal=7, verbose=True)
 
 

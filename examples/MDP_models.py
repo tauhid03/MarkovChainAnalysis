@@ -109,6 +109,7 @@ types1 = [type_A, type_B]
 
 types2 = [type_rw, type_dir]
 
+# function to compute each entry in the transition matrix
 def gridworld_step_prob(curr_state, next_state, type, env):
     ns = neighbors(curr_state, env)
 
@@ -124,68 +125,37 @@ def gridworld_step_prob(curr_state, next_state, type, env):
                 return type[key]
 
 
-def gridworld_step_prob_w_dirs(curr_state, next_state, type, env):
-    curr_gridcell, curr_dir = decode_state(curr_state, env)
-    next_gridcell, next_dir = decode_state(next_state, env)
-    ns = neighbors(curr_gridcell, env)
-    if (curr_gridcell == next_gridcell):
-        return type['beta']
-    elif next_gridcell not in ns:
-        return 0.0
-    else:
-        if dirs[curr_dir] == env[curr_gridcell][next_gridcell]:
-            return (1.0-type['beta'])*type['alpha']
-        else:
-            return (1.0-type['beta'])*(1.0 - type['alpha'])/(len(ns)+1) # +1 because of prob of staying in current state
-
-
-'''
-The encoding scheme I use for states is to assign a unique integer, n, to each grid
-cell, in row-column order. Let M be the number of grid cells.
-
-There are four orientations, also assigned integers, N:=0, E:=1, S:=2, W:=3. Let
-O be the total number of orientations
-
-States are then indexed n + M*O
-
-'''
-
-def encode_state(gridcell, env, dir=0):
-    return gridcell + len(env)*dir
-
-
-def decode_state(n, env):
-    gridcell = n % len(env)
-    dir = n // len(env)
-    return gridcell, dir
-
 '''
 input: list of individual robot states (encoded format)
 output: encoded index of joint system state in base S
 
 '''
-def encodeJointState(states, env, N, S):
+def encodeJointState(states, X):
     joint_state = 0
+    N = len(states)-1
     for s in states:
-        joint_state += s*(S**N)
+        joint_state += s*(X**N)
+        print("adding",s,"*",X,"^",N)
         N = N - 1
     return joint_state
 
-def decodeJointState(state, env, N, S):
-    states = []
+def decodeJointState(state, N, X):
+    states = _np.empty(N, dtype= _np.uint)
     for n in range(N):
-        states.append(state % S)
-        state = state // S
+        next_state = state % X
+        print("state",n,"is",next_state)
+        states[n] = next_state
+        state = state // X
     return states[::-1]
 
 
-def mkTransitions(env, types, N, S, transition):
-    Ps = _np.zeros((2,N,S,S))
+def mkTransitions(env, types, N, X, transition):
+    Ps = _np.zeros((2,N,X,X))
     for (i,type) in enumerate(types):
         for j in range(N):
-            temp_P = _np.zeros((S, S))
-            for start in range(S):
-                for end in range(S):
+            temp_P = _np.zeros((X, X))
+            for start in range(X):
+                for end in range(X):
                     temp_P[start][end] =  transition(start, end, type, env)
 
             # normalize rows of transition matrix, just in case
@@ -198,26 +168,17 @@ regardless of orientation.
 
 Assumes grid cells are much larger than agents.
 '''
-def mkRendezvousReward(env, N, S, dir=0):
-
-    X = S**N
-    R = _np.full((S**N), -1.0)
-    for state in range(len(env)):
+def mkRendezvousReward(N, X):
+    R = _np.full((X**N), -1.0)
+    for state in range(X):
         states = [state for robot in range(N)]
-        R[encodeJointState(states, env, N-1, S)] = 1.0
+        R[encodeJointState(states, X)] = 1.0
     return R
 
-def mkRendezvousMDP(env, N, types=types1):
-    S = len(env)*4
-    Ps = mkTransitions(env, types, N, S, gridworld_step_prob_w_dirs)
-    R = mkRendezvousReward(env, N, S, dir=4)
-    return Ps, R
-
-
 def mkSimpleRendezvousMDP(env, N, types=types2):
-    S = len(env)
-    Ps = mkTransitions(env, types, N, S, gridworld_step_prob)
-    R = mkRendezvousReward(env, N, S)
+    X = len(env)
+    Ps = mkTransitions(env, types, N, X, gridworld_step_prob)
+    R = mkRendezvousReward(N, X)
     return Ps, R
 
 # returns Ps as an array, indexed first by action and then by subsystem
