@@ -62,7 +62,7 @@ def run_policy(N, states, Ps):
 
 def steps_until_rendezvous(N, state_N, allPs, policy, X):
     steps = 0
-    max_steps = 200
+    max_steps = 500
     mdp_policy = policy[state_N]
     Ps = allPs[mdp_policy]
     states = decodeJointState(state_N, N, X)
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     X = len(env2)
     S = np.uint64(X**N)
-    N_trials = 100
+    N_trials = 200
     start_states = np.random.choice(S, N_trials)
 
     mdp_policy = [int(x) for x in str_policy]
