@@ -28,7 +28,7 @@ def example_one_obstacle_6_states(N):
     print(vi.policy)
     sys.stdout.flush()
     with open("policy"+str(N)+".txt", 'w') as f:
-        f.write(vi.policy)
+        f.write(str(vi.policy))
 
 
 
@@ -93,7 +93,8 @@ if __name__ == '__main__':
     else:
         N = 3
         print("Either none or too many arguments provided; please provide a single integer for number of agents")
-    #run_MDP()
+
+    run_MDP(N)
     with open("policy"+str(N)+".txt", 'r') as f:
         str_policy = f.read().strip('()\n').split(', ')
 
