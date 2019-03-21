@@ -66,34 +66,72 @@ def steps_until_rendezvous(N, state_N, allPs, policy, X):
     mdp_policy = policy[state_N]
     Ps = allPs[mdp_policy]
     states = decodeJointState(state_N, N, X)
-    print(states)
 
     while not checkEqual(states) and steps <= max_steps:
         next_states = run_policy(N, states, Ps)
         steps += 1
         states = next_states
 
-    return steps, states
+    return steps
 
 
-@click.command()
-@click.option('--num_agents', '-n', default=2)
-def execute_policy(num_agents):
+def execute_policy(N, policy, start_states):
     X = len(env2)
-    Ps, R = mkSimpleRendezvousMDP(env2, num_agents, types2)
-    with open("policy"+str(num_agents)+".txt", 'r') as f:
-        str_policy = f.read().strip('()\n').split(', ')
+    Ps, R = mkSimpleRendezvousMDP(env2, N, types2)
+    steps = {s:0 for s in start_states}
+    for s in start_states:
+        steps[s] = steps_until_rendezvous(N, s, Ps, policy, X)
+    return steps
 
-    policy = [int(x) for x in str_policy]
-    N_trials = 100
-    start_states = np.random.choice(X, N_trials)
-    steps = [0]*N_trials
-    for i,s in enumerate(start_states):
-        steps[i], sts = steps_until_rendezvous(num_agents, s, Ps, policy, X)
-
-def run_MDP(num_agents):
-        example_one_obstacle_6_states(num_agents)
+def run_MDP(N):
+        example_one_obstacle_6_states(N)
 
 if __name__ == '__main__':
+    args = sys.argv[1:]
+    if len(args) == 1:
+        N = np.uint64(args[0])
+    else:
+        N = 3
+        print("Either none or too many arguments provided; please provide a single integer for number of agents")
     #run_MDP()
-    execute_policy()
+    with open("policy"+str(N)+".txt", 'r') as f:
+        str_policy = f.read().strip('()\n').split(', ')
+
+    X = len(env2)
+    S = np.uint64(X**N)
+    N_trials = 100
+    start_states = np.random.choice(S, N_trials)
+
+    mdp_policy = [int(x) for x in str_policy]
+    mdp_steps = execute_policy(N, mdp_policy, start_states)
+
+    constant_policy_0 = [0 for x in mdp_policy]
+    policy0_steps = execute_policy(N, constant_policy_0, start_states)
+
+    constant_policy_1 = [1 for x in mdp_policy]
+    policy1_steps = execute_policy(N, constant_policy_1, start_states)
+
+    mdp_data = [n for j, n in mdp_steps.items()]
+    p0_data = [n for j, n in policy0_steps.items()]
+    p1_data = [n for j, n in policy1_steps.items()]
+
+    with open("MDP_policy_runtimes_"+str(N)+"_agents.txt", 'a') as f:
+        f.write("Average steps:"+str(np.mean(mdp_data)))
+        f.write("STD steps:"+str(np.std(mdp_data)))
+        for joint_state, num_steps in mdp_steps.items():
+            f.write(str(joint_state)+ ": "+str(num_steps)+'\n')
+
+    with open("constant_policy_0_runtimes_"+str(N)+"_agents.txt", 'a') as f:
+        f.write("Average steps:"+str(np.mean(p0_data))+'\n')
+        f.write("STD steps:"+str(np.std(p0_data))+'\n')
+        for joint_state, num_steps in policy0_steps.items():
+            f.write(str(joint_state)+ ": "+str(num_steps)+'\n')
+
+    with open("constant_policy_1_runtimes_"+str(N)+"_agents.txt", 'a') as f:
+        f.write("Average steps:"+str(np.mean(p1_data))+'\n')
+        f.write("STD steps:"+str(np.std(p1_data))+'\n')
+        for joint_state, num_steps in policy1_steps.items():
+            f.write(str(joint_state)+ ": "+str(num_steps)+'\n')
+
+
+
