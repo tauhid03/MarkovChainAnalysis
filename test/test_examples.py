@@ -20,9 +20,6 @@ class TestExamples(unittest.TestCase):
         self.assertTrue(check_grid_topo(env1))
         self.assertTrue(check_grid_topo(env2))
 
-    def test_step_generation(self):
-        self.assertEqual(gridworld_step_prob_w_dirs(0, 1, types1[0], env1), 0.0)
-
     def test_simple_step_gen(self):
         ns = neighbors(3, env2)
         self.assertSequenceEqual(ns, [5,2])
