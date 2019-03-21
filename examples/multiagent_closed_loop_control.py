@@ -1,10 +1,11 @@
-from src.KronMDP import KronValueIteration
-from examples.MDP_models import *
+import numpy as np
 from timeit import default_timer as timer
 from functools import reduce
 import click
-import numpy as np
+import sys
 
+from src.KronMDP import KronValueIteration
+from examples.MDP_models import *
 
 def example_two_obstacles_64_states(N):
     Ps, R = mkRendezvousMDP(env1, N, types1)
@@ -14,6 +15,7 @@ def example_two_obstacles_64_states(N):
     end = timer()
     print("kronecker method took", end-start,"seconds")
     print(vi.policy)
+    sys.stdout.flush()
 
 
 def example_one_obstacle_6_states(N):
@@ -24,6 +26,7 @@ def example_one_obstacle_6_states(N):
     end = timer()
     print("kronecker method took", end-start,"seconds")
     print(vi.policy)
+    sys.stdout.flush()
     with open("policy"+str(N)+".txt", 'w') as f:
         f.write(vi.policy)
 

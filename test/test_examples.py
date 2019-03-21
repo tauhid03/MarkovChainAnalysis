@@ -47,7 +47,7 @@ class TestExamples(unittest.TestCase):
     def test_encode_decode(self):
         N = randint(2,10)
         X = randint(5,10)
-        states = np.random.choice(np.arange(X, dtype=np.uint), N)
+        states = np.random.choice(np.arange(X, dtype=np.uint64), N)
         state_int = encodeJointState(states, X)
         decoded = decodeJointState(state_int, N, X)
         np.testing.assert_almost_equal(states, decoded, decimal=7, verbose=True)

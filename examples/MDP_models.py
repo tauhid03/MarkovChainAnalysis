@@ -131,19 +131,20 @@ output: encoded index of joint system state in base S
 
 '''
 def encodeJointState(states, X):
-    joint_state = 0
-    N = len(states)-1
+    X = _np.uint64(X)
+    joint_state = _np.uint64(0)
+    N = _np.uint64(states.size-1)
     for s in states:
-        joint_state += s*(X**N)
-        print("adding",s,"*",X,"^",N)
+        joint_state += _np.uint64(s*(X**N))
         N = N - 1
     return joint_state
 
 def decodeJointState(state, N, X):
-    states = _np.empty(N, dtype= _np.uint)
+    state = _np.uint64(state)
+    X = _np.uint64(X)
+    states = _np.empty(N, dtype= _np.uint64)
     for n in range(N):
         next_state = state % X
-        print("state",n,"is",next_state)
         states[n] = next_state
         state = state // X
     return states[::-1]
@@ -169,10 +170,12 @@ regardless of orientation.
 Assumes grid cells are much larger than agents.
 '''
 def mkRendezvousReward(N, X):
-    R = _np.full((X**N), -1.0)
+    S = _np.uint64(X**N)
+    R = _np.full(S, -1.0)
     for state in range(X):
-        states = [state for robot in range(N)]
-        R[encodeJointState(states, X)] = 1.0
+        states = _np.full(N, state, dtype= _np.uint64)
+        joint_state = encodeJointState(states, X)
+        R[joint_state] = 1.0
     return R
 
 def mkSimpleRendezvousMDP(env, N, types=types2):
