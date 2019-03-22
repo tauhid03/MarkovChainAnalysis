@@ -2,3 +2,5 @@ git+git://github.com/sawcordwell/pymdptoolbox@7c96789cc80e280437005c12065cf70266
 tarjan
 discreteMarkovChain
 click
+seaborn
+pandas
