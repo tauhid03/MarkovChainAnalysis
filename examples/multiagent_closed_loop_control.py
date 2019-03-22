@@ -83,8 +83,18 @@ def execute_policy(N, policy, start_states):
         steps[s] = steps_until_rendezvous(N, s, Ps, policy, X)
     return steps
 
+
 def run_MDP(N):
-        example_one_obstacle_6_states(N)
+    example_one_obstacle_6_states(N)
+
+def write_data(dat, fname):
+    step_data = [n for j, n in dat.items()]
+    with open(fname, 'w') as f:
+        f.write("Average steps:"+str(np.mean(step_data))+'\n')
+        f.write("STD steps:"+str(np.std(step_data))+'\n')
+        for joint_state, num_steps in dat.items():
+            f.write(str(joint_state)+ ": "+str(num_steps)+'\n')
+
 
 if __name__ == '__main__':
     args = sys.argv[1:]
@@ -112,27 +122,13 @@ if __name__ == '__main__':
     constant_policy_1 = [1 for x in mdp_policy]
     policy1_steps = execute_policy(N, constant_policy_1, start_states)
 
-    mdp_data = [n for j, n in mdp_steps.items()]
-    p0_data = [n for j, n in policy0_steps.items()]
-    p1_data = [n for j, n in policy1_steps.items()]
+    dats = [mdp_steps, policy0_steps, policy1_steps]
 
-    with open("MDP_policy_runtimes_"+str(N)+"_agents.txt", 'a') as f:
-        f.write("Average steps:"+str(np.mean(mdp_data)))
-        f.write("STD steps:"+str(np.std(mdp_data)))
-        for joint_state, num_steps in mdp_steps.items():
-            f.write(str(joint_state)+ ": "+str(num_steps)+'\n')
+    fnames = [ "MDP_policy_runtimes_"+str(N)+"_agents.txt"
+             , "const0_policy_runtimes_"+str(N)+"_agents.txt"
+             , "const1_policy_runtimes_"+str(N)+"_agents.txt"
+             ]
 
-    with open("constant_policy_0_runtimes_"+str(N)+"_agents.txt", 'a') as f:
-        f.write("Average steps:"+str(np.mean(p0_data))+'\n')
-        f.write("STD steps:"+str(np.std(p0_data))+'\n')
-        for joint_state, num_steps in policy0_steps.items():
-            f.write(str(joint_state)+ ": "+str(num_steps)+'\n')
-
-    with open("constant_policy_1_runtimes_"+str(N)+"_agents.txt", 'a') as f:
-        f.write("Average steps:"+str(np.mean(p1_data))+'\n')
-        f.write("STD steps:"+str(np.std(p1_data))+'\n')
-        for joint_state, num_steps in policy1_steps.items():
-            f.write(str(joint_state)+ ": "+str(num_steps)+'\n')
-
-
+    for (d,f) in zip(dats, fnames):
+        write_data(d, f)
 
