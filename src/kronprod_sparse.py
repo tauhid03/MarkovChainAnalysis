@@ -1,4 +1,5 @@
 #! /usr/bin/env python"
+# NOTE: THIS FILE WILL BE DEPRECATED SOON. I PLAN ON REFACTORING THE CODE SO THAT WAY WE WONT NEED MORE THAN 1 CLASS FOR KRON PROD.
 # Code implementing "Efficient Computer Manipulation of Tensor Products..."
 # Pereyra Scherer
 # Assumes all factor matrices square, identical size
