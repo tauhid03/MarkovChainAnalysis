@@ -127,9 +127,9 @@ class TestKronInv(unittest.TestCase):
         kp = KronProdInv(As)
         x = kp.dot(y)
         if(np.allclose(x,big_x) == False):
-            return True
+            return
         else:
-            return False
+            self.fail("No equivalent!")
 
 
 
