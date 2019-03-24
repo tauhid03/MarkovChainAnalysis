@@ -7,8 +7,9 @@
 import unittest
 from scipy.stats import ortho_group
 import numpy as np
-from pathlib import Path
-print(Path('/home/username').parent)
+
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from functools import reduce
 from src.operations import *
 

@@ -4,8 +4,8 @@ from fail import As_fail, Y_fail
 from scipy.stats import ortho_group
 import unittest
 import numpy as np
-from pathlib import Path
-print(Path('/home/username').parent)
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from functools import reduce
 from src.operations import invert
 from src.kronprod import KronProd
