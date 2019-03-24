@@ -23,7 +23,7 @@ class TestKronInv(unittest.TestCase):
                     np.array([[1.,1.], [1.,1.]])]
         x1 = np.array([1.,1.,1.,1.])
         y1 = np.array([4,4,4,4])
-        kp = KronProdInv(list(reversed(A1)))
+        kp = KronProdInv(A1)
         x = kp.dot(y1)
         np.testing.assert_almost_equal(x, x1, decimal=7, verbose=True)
 
@@ -40,7 +40,7 @@ class TestKronInv(unittest.TestCase):
         big_x = np.linalg.solve(big_A, y)
         print("full calc: ",big_x)
 
-        kp = KronProdInv(list(reversed(As)))
+        kp = KronProdInv(As)
         x = kp.dot(y)
         print("efficient calc: ", x)
 
@@ -52,7 +52,7 @@ class TestKronInv(unittest.TestCase):
         r_As = [ortho_group.rvs(dim=p) for i in range(n)]
         As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
         y = np.random.rand(p**n)
-        kp = KronProdInv(list(reversed(As)))
+        kp = KronProdInv(As)
         x = kp.dot(y)
         print("efficient calc: ", x)
 
@@ -69,7 +69,7 @@ class TestKronInv(unittest.TestCase):
         big_x = big_A.dot(y1)
         print("FOO")
         print("full calc: ",big_x)
-        kp = KronProdInv(list(reversed(A1)))
+        kp = KronProdInv(A1)
         x = kp.dot(y1)
         print("efficient calc: ", x)
         print("BAR")
@@ -94,7 +94,7 @@ class TestKronInv(unittest.TestCase):
         big_x = big_A.dot(y)
         print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
 
-        kp = KronProdInv(list(reversed(As)))
+        kp = KronProdInv(As)
         x = kp.dot(y)
         print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
 
@@ -109,7 +109,7 @@ class TestKronInv(unittest.TestCase):
             A[1,:] = A[0,:]
         As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
         x = np.random.rand(p**n)
-        kp = KronProdInv(list(reversed(As)))
+        kp = KronProdInv(As)
         Y = kp.dot(x)
         print("efficient calc: ", Y)
 
@@ -124,7 +124,7 @@ class TestKronInv(unittest.TestCase):
         big_A = reduce(np.kron, As)
         big_A_inv = np.linalg.pinv(big_A)
         big_x = big_A_inv.dot(y)
-        kp = KronProdInv(list(reversed(As)))
+        kp = KronProdInv(As)
         x = kp.dot(y)
         if(np.allclose(x,big_x) == False):
             return True

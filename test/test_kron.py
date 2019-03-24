@@ -19,7 +19,7 @@ class TestKron(unittest.TestCase):
                     np.array([[1.,1.], [1.,1.]])]
         x1 = np.array([1.,1.,1.,1.])
         y1 = np.array([4.,4.,4.,4.])
-        kp = KronProd(list(reversed(A1)))
+        kp = KronProd(A1)
         y = kp.dot(x1)
         self.assertSequenceEqual(list(y), list(y1))
 
@@ -32,7 +32,7 @@ class TestKron(unittest.TestCase):
         print(x1)
         big_y = np.matmul(big_A, x1)
         print("full calc: ",big_y)
-        kp = KronProd(list(reversed(A1)))
+        kp = KronProd(A1)
         Y = kp.dot(x1)
         print("efficient calc: ", Y)
         self.assertSequenceEqual(list(Y), list(big_y))
@@ -49,7 +49,7 @@ class TestKron(unittest.TestCase):
         big_y = np.matmul(big_A, x)
         print("full calc: ",big_y)
 
-        kp = KronProd(list(reversed(As)))
+        kp = KronProd(As)
         Y = kp.dot(x)
         print("efficient calc: ", Y)
 
@@ -61,7 +61,7 @@ class TestKron(unittest.TestCase):
         r_As = [np.random.rand(p,p) for i in range(n)]
         As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
         x = np.random.rand(p**n)
-        kp = KronProd(list(reversed(As)))
+        kp = KronProd(As)
         Y = kp.dot(x)
         print("efficient calc: ", Y)
 
