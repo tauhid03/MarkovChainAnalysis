@@ -1,12 +1,12 @@
 from src.KronMDP import KronValueIteration
-from examples.MDP_models import env1, mkRendezvousMDP, types1
+from examples.MDP_models import *
 from timeit import default_timer as timer
 from functools import reduce
 import click
 
 
 def example_two_obstacles_64_states(N):
-    Ps, R = mkRendezvousMDP(env1, types1, N)
+    Ps, R = mkRendezvousMDP(env1, N, types1)
     start = timer()
     vi = KronValueIteration(Ps, R, 0.95, skip_check=True, sparse=True)
     vi.run()
@@ -16,7 +16,7 @@ def example_two_obstacles_64_states(N):
 
 
 def example_one_obstacle_6_states(N):
-    Ps, R = mkSimpleRendezvousMDP(env2, types2, N)
+    Ps, R = mkSimpleRendezvousMDP(env2, N, types2)
     start = timer()
     vi = KronValueIteration(Ps, R, 0.95, skip_check=True, sparse=True)
     vi.run()
