@@ -4,10 +4,8 @@ import seaborn as sns
 sns.set()
 
 def plot_steps(step_data):
-    print(step_data)
 
     df = pd.DataFrame(step_data, columns=["Policy","N", "steps"])
-    print(df)
 
     plot = sns.boxplot(data=df, x="N", y="steps", hue="Policy")
     plot.get_figure().savefig("trend.png")
@@ -28,12 +26,11 @@ def read_data(Ns):
         tags = ["MDP", "const0", "const1"]
         for t in tags:
             try:
-                print("reading",t)
                 step_data.extend(read_file(N, t))
             except FileNotFoundError:
                 pass
     return step_data
 
 if __name__ == '__main__':
-    step_data = read_data([2,3,4])
+    step_data = read_data([2,3,4,5,6,7,8])
     plot_steps(step_data)

@@ -62,7 +62,7 @@ def run_policy(N, states, Ps):
 
 def steps_until_rendezvous(N, state_N, allPs, policy, X):
     steps = 0
-    max_steps = 500
+    max_steps = 2000
     mdp_policy = policy[state_N]
     Ps = allPs[mdp_policy]
     states = decodeJointState(state_N, N, X)
@@ -73,7 +73,6 @@ def steps_until_rendezvous(N, state_N, allPs, policy, X):
         states = next_states
 
     return steps
-
 
 def execute_policy(N, policy, start_states):
     X = len(env2)
