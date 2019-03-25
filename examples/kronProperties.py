@@ -4,8 +4,12 @@ import numpy as np
 from scipy.stats import ortho_group
 from operator import mul
 from functools import reduce
+from pathlib import Path
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.kronprod import KronProd
-from src.kronprod_sparse import KronProdSparse
+from src.operations import *
 import math
 #
 # for y=A.Tx
@@ -44,7 +48,7 @@ def transposeTest(A,x):
     newA = []
     for i in range(len(A)):
         newA.append(A[i].T)
-    kp1 = KronProd(list(reversed(newA)))
+    kp1 = KronProd(newA)
     Y1 = kp1.dot(x)
     time_kron_dyn = time.time() - foo
 
@@ -75,7 +79,7 @@ def inverseTest(A,x):
     newA = []
     for i in range(len(A)):
         newA.append(np.linalg.inv(A[i]))
-    kp1 = KronProd(list(reversed(newA)))
+    kp1 = KronProd(newA)
     Y1 = kp1.dot(x)
     time_kron_dyn = time.time() - foo
 
@@ -95,7 +99,7 @@ def dotTest(A,x):
 
 
     foo = time.time()
-    kp1 = KronProd(list(reversed(A)))
+    kp1 = KronProd(A)
     Y1 = kp1.dot(x)
     time_kron_dyn = time.time() - foo
 
@@ -126,7 +130,7 @@ def complexTest(A,x):
     newA = []
     for i in range(len(A)):
         newA.append(np.conj(A[i]))
-    kp1 = KronProd(list(reversed(newA)))
+    kp1 = KronProd(newA)
     Y1 = kp1.dot(x)
     time_kron_dyn = time.time() - foo
 
@@ -157,7 +161,7 @@ def psuedoTest(A,x):
     newA = []
     for i in range(len(A)):
         newA.append(np.linalg.pinv(A[i]))
-    kp1 = KronProd(list(reversed(newA)))
+    kp1 = KronProd(newA)
     Y1 = kp1.dot(x)
     time_kron_dyn = time.time() - foo
 
@@ -167,14 +171,13 @@ def psuedoTest(A,x):
         print("PInverse Test Failed!")
 
     return time_full, time_kron, time_kron_dyn
-#
-#
 
 if __name__ == "__main__":
     #Generate matrix and vector
-    A1 = ortho_group.rvs(dim=100)
-    A2 = ortho_group.rvs(dim=100)
-    x = np.random.rand(100**2)
+    size = 10
+    A1 = ortho_group.rvs(dim=size)
+    A2 = ortho_group.rvs(dim=size)
+    x = np.random.rand(size**2)
     print("Transpose Test")
     print(transposeTest([A1,A2],x))
     print("Inverse Test")
