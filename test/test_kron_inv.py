@@ -1,10 +1,14 @@
 #! /usr/bin/env python
 
+from fail import As_fail, Y_fail
+from scipy.stats import ortho_group
 import unittest
 import numpy as np
-from scipy.stats import ortho_group
-from src.kronprodInv import KronProdInv
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from functools import reduce
+from src.operations import invert
+from src.kronprod import KronProd
 class TestKronInv(unittest.TestCase):
 
     # add global stuff here
@@ -20,7 +24,7 @@ class TestKronInv(unittest.TestCase):
                     np.array([[1.,1.], [1.,1.]])]
         x1 = np.array([1.,1.,1.,1.])
         y1 = np.array([4,4,4,4])
-        kp = KronProdInv(list(reversed(A1)))
+        kp = KronProd(invert(A1))
         x = kp.dot(y1)
         np.testing.assert_almost_equal(x, x1, decimal=7, verbose=True)
 
@@ -37,7 +41,7 @@ class TestKronInv(unittest.TestCase):
         big_x = np.linalg.solve(big_A, y)
         print("full calc: ",big_x)
 
-        kp = KronProdInv(list(reversed(As)))
+        kp = KronProd(invert(As))
         x = kp.dot(y)
         print("efficient calc: ", x)
 
@@ -49,7 +53,7 @@ class TestKronInv(unittest.TestCase):
         r_As = [ortho_group.rvs(dim=p) for i in range(n)]
         As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
         y = np.random.rand(p**n)
-        kp = KronProdInv(list(reversed(As)))
+        kp = KronProd(invert(As))
         x = kp.dot(y)
         print("efficient calc: ", x)
 
@@ -59,12 +63,14 @@ class TestKronInv(unittest.TestCase):
         A1 = [ np.array([[1.0, 0.0], [0.0,0.0]]),
                     np.array([[1.,1.], [0.,0.]])]
         y1 = np.array([1.,2.,3.,4.])
-        big_A = reduce(np.kron, A1)
-        big_A_inv = np.linalg.pinv(big_A)
-        big_x = big_A_inv.dot(y1)
+        A1_inv = []
+        for a in A1:
+            A1_inv.append(np.linalg.pinv(a))
+        big_A = reduce(np.kron, A1_inv)
+        big_x = big_A.dot(y1)
         print("FOO")
         print("full calc: ",big_x)
-        kp = KronProdInv(list(reversed(A1)))
+        kp = KronProd(invert(A1))
         x = kp.dot(y1)
         print("efficient calc: ", x)
         print("BAR")
@@ -81,15 +87,17 @@ class TestKronInv(unittest.TestCase):
             A[1,:] = A[0,:]
         As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
         y = np.random.rand(p**n)
+        As_inv = []
+        for a in As:
+            As_inv.append(np.linalg.pinv(a))
 
-        big_A = reduce(np.kron, As)
-        big_A_inv = np.linalg.pinv(big_A)
-        big_x = big_A_inv.dot(y)
-        print("full calc: ",big_x)
+        big_A = reduce(np.kron, As_inv)
+        big_x = big_A.dot(y)
+        print("[test_kron_inv - testRandom_pInv] full calc: ",big_x)
 
-        kp = KronProdInv(list(reversed(As)))
+        kp = KronProd(invert(As))
         x = kp.dot(y)
-        print("efficient calc: ", x)
+        print("[test_kron_inv - testRandom_pInv] efficient calc: ", x)
 
         np.testing.assert_almost_equal(big_x, x, decimal=7, verbose=True)
 
@@ -102,9 +110,27 @@ class TestKronInv(unittest.TestCase):
             A[1,:] = A[0,:]
         As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
         x = np.random.rand(p**n)
-        kp = KronProdInv(list(reversed(As)))
+        kp = KronProd(invert(As))
         Y = kp.dot(x)
         print("efficient calc: ", Y)
+
+    def testFail(self):
+        #For some reason this breaks the property of kron product - (A_1 kron A_2)^+ = A_1^+ kron A_2^+
+        #The equivalent test for this is testRandom_pInv, but the reduce is performed after pinv. If it isn't then we get this error.
+        #This error didn't seem to happen for n=p=3 or 2 but does occur sometimes when n=p=4 and somewhat frequently when n=p=5.
+        n = 4
+        p = 4
+        As = As_fail
+        y = Y_fail
+        big_A = reduce(np.kron, As)
+        big_A_inv = np.linalg.pinv(big_A)
+        big_x = big_A_inv.dot(y)
+        kp = KronProd(invert(As))
+        x = kp.dot(y)
+        if(np.allclose(x,big_x) == False):
+            return
+        else:
+            self.fail("No equivalent!")
 
 
 

@@ -1,8 +1,9 @@
 #! /usr/bin/env python
 
 import unittest
-
-from src.kronprod_sparse import *
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.kronprod import *
 
 class TestKronSparse(unittest.TestCase):
 
@@ -15,7 +16,7 @@ class TestKronSparse(unittest.TestCase):
                     np.array([[1.,1.], [1.,1.]])]
         x1 = np.array([1.,1.,1.,1.])
         y1 = np.array([4.,4.,4.,4.])
-        kp = KronProdSparse(A1)
+        kp = KronProd(A1,sparse_flag=True)
         y = kp.dot(x1)
         self.assertSequenceEqual(list(y), list(y1))
 
@@ -28,7 +29,7 @@ class TestKronSparse(unittest.TestCase):
         print(x1)
         big_y = np.matmul(big_A, x1)
         print("full calc: ",big_y)
-        kp = KronProdSparse(A1)
+        kp = KronProd(A1,sparse_flag=True)
         Y = kp.dot(x1)
         print("efficient calc: ", Y)
         self.assertSequenceEqual(list(Y), list(big_y))
@@ -45,7 +46,7 @@ class TestKronSparse(unittest.TestCase):
         big_y = np.matmul(big_A, x)
         print("full calc: ",big_y)
 
-        kp = KronProdSparse(As)
+        kp = KronProd(As,sparse_flag=True)
         Y = kp.dot(x)
         print("efficient calc: ", Y)
 
@@ -57,7 +58,7 @@ class TestKronSparse(unittest.TestCase):
         r_As = [np.random.rand(p,p) for i in range(n)]
         As = [m/m.sum(axis=1)[:,None] for m in r_As] # normalize each row
         x = np.random.rand(p**n)
-        kp = KronProdSparse(As)
+        kp = KronProd(As,sparse_flag=True)
         Y = kp.dot(x)
         print("efficient calc: ", Y)
 

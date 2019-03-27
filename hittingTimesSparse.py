@@ -339,7 +339,7 @@ def main():
 
     time_start = time.time()
     out = hittingtime(Mlist)
-#    np.savetxt("hittingtimeSparse_1x1.csv", out, delimiter=",")
+    np.savetxt("hittingtimeSparse_1x1.csv", out, delimiter=",")
     print("Total time = {}".format(time.time() - time_start))
    
 
