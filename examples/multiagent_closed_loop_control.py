@@ -33,7 +33,7 @@ def example_one_obstacle_6_states(N):
 def example_meet8_wires(N):
     Ps, R = mkMeet8MDP(N)
     start = timer()
-    vi = KronValueIteration(Ps, R, epsilon = 0.001, skip_check=True, sparse=True)
+    vi = KronValueIteration(Ps, R, 0.95, skip_check=True, sparse=True)
     vi.run()
     end = timer()
     print("kronecker method took", end-start,"seconds")
@@ -114,6 +114,7 @@ if __name__ == '__main__':
         N = 3
         print("Either none or too many arguments provided; please provide a single integer for number of agents")
 
+    print("running with",N,"agents")
     run_MDP(N)
 
     RUN_POLICY = False

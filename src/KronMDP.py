@@ -130,9 +130,11 @@ class KronMDP(MDP):
             # correct.
             _util.check(transitions, reward)
 
-        self.A = transitions.shape[0]
+        self.A = len(transitions)
+        print("there are", self.A, "actions")
         self.P = self._computeTransition(transitions)
         self.S = self.P[0].N
+        print("size of state space is", self.S)
         self.R = self._computeReward(reward, transitions)
 
         # the verbosity is by default turned off
@@ -613,7 +615,7 @@ class KronValueIteration(KronMDP):
     """
 
     def __init__(self, transitions, reward, discount=1.0, epsilon=0.01,
-                 max_iter=50, initial_value=0, skip_check=False,
+                 max_iter=30, initial_value=0, skip_check=False,
                  sparse=False):
         # Initialise a value iteration MDP.
 

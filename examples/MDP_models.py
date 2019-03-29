@@ -208,13 +208,12 @@ def mkRendezvousReward(N, X):
     return R
 
 def countSame(states):
-    n = len(states)
     counts = {}
     for s in states:
         if s in counts:
             counts[s] += 1
         else:
-            counts[s] = 0
+            counts[s] = 1
     collisions = list(counts.values())
     return collisions
 
@@ -235,8 +234,8 @@ def mkMeet8MDP(N):
     X = len(env_wire)
     N = int(N)
     Ps = mk_Ps_for_all_As()
-    real_Ps = [P*N for P in Ps] 
-    R = mkMeetKReward(N, X, 8)
+    real_Ps = [[P]*N for P in Ps]
+    R = mkMeetKReward(N, X, 5)
     return real_Ps, R
 
 def mkSimpleRendezvousMDP(env, N, types=types2):
