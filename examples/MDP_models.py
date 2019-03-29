@@ -235,8 +235,9 @@ def mkMeet8MDP(N):
     X = len(env_wire)
     N = int(N)
     Ps = mk_Ps_for_all_As()
+    real_Ps = [P*N for P in Ps] 
     R = mkMeetKReward(N, X, 8)
-    return Ps, R
+    return real_Ps, R
 
 def mkSimpleRendezvousMDP(env, N, types=types2):
     X = len(env)
