@@ -29,14 +29,14 @@ class KronProd:
             if DEBUG:
                 print(self.flat_A)
             self.nmat = len(self.As)
-            self.n = [len(a) for a in self.As] # dimensions of factors
+            self.n = [a.size for a in self.As] # dimensions of factors
             self.N = reduce(mul, self.n, 1) # size of final vector y = A*x self.Y = np.empty(shape=self.N, dtype = np.float64)
             self.Y = np.empty(shape=self.N, dtype = np.float64)
             self.X = np.empty(shape=self.n[0]**self.nmat)
     def createSparse(self,As):
         self.As = As
         self.nmat = len(self.As)
-        self.n = [len(a) for a in self.As] # dimensions of factors
+        self.n = [a.shape[0] for a in self.As] # dimensions of factors
         self.N = reduce(mul, self.n, 1) # size of final vector y = A*x
         self.Y = np.empty(shape=self.N, dtype = np.float64)
         self.xval = 0 #Used in finding sum

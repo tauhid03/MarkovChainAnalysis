@@ -22,4 +22,4 @@ setup(name="kronprod",
       license="MIT",
       py_modules=['kronprod', 'KronMDP'],
       packages=find_packages(),
-      install_requires=["numpy", "scipy", "pymdptoolbox"])
+      install_requires=["numpy", "scipy", "pymdptoolbox", "cython", "seaborn"])

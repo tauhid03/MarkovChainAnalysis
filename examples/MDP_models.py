@@ -3,6 +3,38 @@ from random import random
 from copy import deepcopy
 
 '''
+define topology for wire pole environment
+'''
+
+env_wire = {
+    0: {1:'',2:'',3:'',4:''},
+    1: {0:'',2:'',4:''},
+    2: {0:'',1:'',3:''},
+    3: {0:'',2:'',4:''},
+    4: {0:'',1:'',3:''}
+    }
+
+def mk_transition(start, action, fname="octagon_N100_T31_"):
+    fname = fname + "R"+str(start)+"_A"+str(action)+"_regions.csv"
+    with open(fname, 'r') as f:
+        rs = f.readline().strip().replace('"', '').split(",")
+        rs = _np.array([float(r)/100. for r in rs])
+    return rs
+
+def mk_transition_matrix(action):
+    P = []
+    for start in range(5):
+        P.append(mk_transition(start, action))
+    return _np.array(P)
+
+def mk_Ps_for_all_As():
+    num_actions = 3**4
+    Ps = []
+    for i in range(num_actions):
+        Ps.append(mk_transition_matrix(i))
+    return Ps
+
+'''
 define topology for 4x5 rectangular environment
 see diagram (o = free, x = obstacle)
 o x o o o
@@ -83,9 +115,6 @@ type_B = {
     'alpha': 0.2,
     'beta': 0.95
 }
-
-
-# TODO: make prob a function of size of state
 
 # uniform random walk
 type_rw = {
@@ -175,8 +204,39 @@ def mkRendezvousReward(N, X):
     for state in range(X):
         states = _np.full(N, state, dtype= _np.uint64)
         joint_state = encodeJointState(states, X)
-        R[joint_state] = 1.0
+        R[int(joint_state)] = 1.0
     return R
+
+def countSame(states):
+    n = len(states)
+    counts = {}
+    for s in states:
+        if s in counts:
+            counts[s] += 1
+        else:
+            counts[s] = 0
+    collisions = list(counts.values())
+    return collisions
+
+# returns reward if at least k agents meet
+def mkMeetKReward(N, X, k):
+    S = _np.uint64(X**N)
+    R = _np.full(S, -1.0)
+    for joint_state in range(int(X)**int(N)):
+        states = decodeJointState(joint_state, N, X)
+        colls = countSame(states)
+        for c in colls:
+            if c >= k:
+                R[joint_state] += 5.
+    return R
+
+
+def mkMeet8MDP(N):
+    X = len(env_wire)
+    N = int(N)
+    Ps = mk_Ps_for_all_As()
+    R = mkMeetKReward(N, X, 8)
+    return Ps, R
 
 def mkSimpleRendezvousMDP(env, N, types=types2):
     X = len(env)

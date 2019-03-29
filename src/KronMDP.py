@@ -5,7 +5,7 @@ import time as _time
 from mdptoolbox.mdp import MDP, _printVerbosity, _MSG_STOP_EPSILON_OPTIMAL_POLICY, _MSG_STOP_MAX_ITER, _MSG_STOP_EPSILON_OPTIMAL_VALUE
 import mdptoolbox.util as _util
 from src.kronprod import KronProd
-from src.kronprod_sparse import KronProdSparse
+import src.operations as kOps
 from functools import reduce
 import scipy.sparse as _sp
 
@@ -131,10 +131,8 @@ class KronMDP(MDP):
             _util.check(transitions, reward)
 
         self.A = transitions.shape[0]
-        print("There are",self.A,"actions")
         self.P = self._computeTransition(transitions)
         self.S = self.P[0].N
-        print("The joint state space is size", self.S)
         self.R = self._computeReward(reward, transitions)
 
         # the verbosity is by default turned off
@@ -158,7 +156,7 @@ class KronMDP(MDP):
 
     def _computeTransition(self, transition):
         if self.sparse:
-            return tuple(KronProdSparse(transition[a]) for a in range(self.A))
+            return tuple(KronProd(transition[a], sparse_flag = True) for a in range(self.A))
         else:
             return tuple(KronProd(transition[a]) for a in range(self.A))
 
@@ -484,7 +482,7 @@ class KronPolicyIteration(KronMDP):
         i_as = []
         for i in self.P[0].n:
             i_as.append(_np.eye(i))
-        kpI = KronProd(list(reversed(i_as)))
+        kpI = KronProd(kOps.invert(i_as))
 
         #Get max value vector
         vectors = []
@@ -614,8 +612,8 @@ class KronValueIteration(KronMDP):
 
     """
 
-    def __init__(self, transitions, reward, discount, epsilon=0.01,
-                 max_iter=1000, initial_value=0, skip_check=False,
+    def __init__(self, transitions, reward, discount=1.0, epsilon=0.01,
+                 max_iter=50, initial_value=0, skip_check=False,
                  sparse=False):
         # Initialise a value iteration MDP.
 

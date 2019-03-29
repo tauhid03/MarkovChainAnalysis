@@ -30,6 +30,17 @@ def example_one_obstacle_6_states(N):
     with open("policy"+str(N)+".txt", 'w') as f:
         f.write(str(vi.policy))
 
+def example_meet8_wires(N):
+    Ps, R = mkMeet8MDP(N)
+    start = timer()
+    vi = KronValueIteration(Ps, R, epsilon = 0.001, skip_check=True, sparse=True)
+    vi.run()
+    end = timer()
+    print("kronecker method took", end-start,"seconds")
+    print(vi.policy)
+    sys.stdout.flush()
+    with open("policy"+str(N)+".txt", 'w') as f:
+        f.write(str(vi.policy))
 
 
 # choose value from normalized list of transition probabilities
@@ -84,7 +95,7 @@ def execute_policy(N, policy, start_states):
 
 
 def run_MDP(N):
-    example_one_obstacle_6_states(N)
+    example_meet8_wires(N)
 
 def write_data(dat, fname):
     step_data = [n for j, n in dat.items()]
@@ -104,30 +115,33 @@ if __name__ == '__main__':
         print("Either none or too many arguments provided; please provide a single integer for number of agents")
 
     run_MDP(N)
-    with open("policy"+str(N)+".txt", 'r') as f:
-        str_policy = f.read().strip('()\n').split(', ')
 
-    X = len(env2)
-    S = np.uint64(X**N)
-    N_trials = 200
-    start_states = np.random.choice(S, N_trials)
+    RUN_POLICY = False
+    if RUN_POLICY:
+        with open("policy"+str(N)+".txt", 'r') as f:
+            str_policy = f.read().strip('()\n').split(', ')
 
-    mdp_policy = [int(x) for x in str_policy]
-    mdp_steps = execute_policy(N, mdp_policy, start_states)
+        X = len(env2)
+        S = np.uint64(X**N)
+        N_trials = 200
+        start_states = np.random.choice(S, N_trials)
 
-    constant_policy_0 = [0 for x in mdp_policy]
-    policy0_steps = execute_policy(N, constant_policy_0, start_states)
+        mdp_policy = [int(x) for x in str_policy]
+        mdp_steps = execute_policy(N, mdp_policy, start_states)
 
-    constant_policy_1 = [1 for x in mdp_policy]
-    policy1_steps = execute_policy(N, constant_policy_1, start_states)
+        constant_policy_0 = [0 for x in mdp_policy]
+        policy0_steps = execute_policy(N, constant_policy_0, start_states)
 
-    dats = [mdp_steps, policy0_steps, policy1_steps]
+        constant_policy_1 = [1 for x in mdp_policy]
+        policy1_steps = execute_policy(N, constant_policy_1, start_states)
 
-    fnames = [ "MDP_policy_runtimes_"+str(N)+"_agents.txt"
-             , "const0_policy_runtimes_"+str(N)+"_agents.txt"
-             , "const1_policy_runtimes_"+str(N)+"_agents.txt"
-             ]
+        dats = [mdp_steps, policy0_steps, policy1_steps]
 
-    for (d,f) in zip(dats, fnames):
-        write_data(d, f)
+        fnames = [ "MDP_policy_runtimes_"+str(N)+"_agents.txt"
+                 , "const0_policy_runtimes_"+str(N)+"_agents.txt"
+                 , "const1_policy_runtimes_"+str(N)+"_agents.txt"
+                 ]
+
+        for (d,f) in zip(dats, fnames):
+            write_data(d, f)
 
