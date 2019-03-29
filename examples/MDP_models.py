@@ -14,7 +14,7 @@ env_wire = {
     4: {0:'',1:'',3:''}
     }
 
-def mk_transition(start, action, fname="octagon_N100_T31_"):
+def mk_transition(start, action, fname="data/octagon_N100_T31_"):
     fname = fname + "R"+str(start)+"_A"+str(action)+"_regions.csv"
     with open(fname, 'r') as f:
         rs = f.readline().strip().replace('"', '').split(",")
